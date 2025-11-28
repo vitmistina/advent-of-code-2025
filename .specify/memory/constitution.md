@@ -1,22 +1,24 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.0.0 → 1.1.0
+Version Change: 1.1.0 → 1.2.0
 Modified Principles:
-  - Principle IV: "Testing Required" → "Test-Driven Development (NON-NEGOTIABLE)"
-    - Added mandatory Red-Green-Refactor cycle
-    - Tests MUST be written BEFORE implementation
-    - Tests MUST fail before implementation begins
-Added Sections: None
+  - Principle V: "Automation First" - Clarified meta runner role (downloads only)
+  - NEW Principle VII: "Specification-Driven Workflow" - Added Specify framework integration
+Added Sections:
+  - Specify Framework Workflow (detailed spec → tasks process)
+  - Updated Workflow Order with explicit Specify commands
 Removed Sections: None
 
 Templates Status:
-  ✅ plan-template.md - Reviewed, no updates needed (constitution check placeholder intact)
-  ✅ spec-template.md - Reviewed, aligns with TDD requirements
-  ✅ tasks-template.md - Reviewed, already includes "Tests written → User approved → Tests fail → Then implement" pattern
-  ⚠️ No commands directory found - skipped
+  ✅ plan-template.md - Reviewed, aligns with new workflow (Advent of Code doesn't use plan phase)
+  ✅ spec-template.md - Reviewed, user stories map to puzzle parts
+  ✅ tasks-template.md - Reviewed, TDD pattern enforced in task generation
+  ⚠️ No commands directory - not applicable
 
-Follow-up TODOs: None
+Follow-up TODOs:
+  - Create README.md at project root with progress tracker (Principle VI requirement)
+  - Create meta runner script (Principle V requirement)
 -->
 
 # Advent of Code 2025 Constitution
@@ -63,15 +65,15 @@ Each solution MUST include at least one test per part using pytest or simple ass
 
 A meta runner script at the root level MUST handle:
 
-- Downloading task descriptions
+- Downloading task descriptions from Advent of Code website
 - Downloading `input.txt` (if not present)
-- Providing prompt templates to parse task descriptions into `test_input.txt` (with support for multiple test input files for different parts)
-- Running solutions
+- Generating `test_input.txt` from task description examples (with support for multiple test input files for different parts)
+- Running solutions against inputs
 - Validating answers against the Advent of Code website
 
 Session tokens MUST be stored in a `.env` file for authentication.
 
-**Rationale**: Automation reduces manual steps, prevents errors from copy-paste mistakes, and allows focus on problem-solving rather than infrastructure.
+**Rationale**: Automation reduces manual steps, prevents errors from copy-paste mistakes, and allows focus on problem-solving. The meta runner handles external integration only; solution planning and task generation are handled by the Specify framework (see Principle VII).
 
 ### VI. Documentation & Progress Tracking
 
@@ -82,6 +84,28 @@ The main `README.md` MUST be kept current with:
 
 **Rationale**: Documentation captures insights and patterns discovered during problem-solving, provides motivation through visible progress, and helps identify knowledge gaps.
 
+### VII. Specification-Driven Workflow
+
+**Specify framework MUST be used to convert challenge descriptions into executable tasks**:
+
+1. **Spec Phase** (`specify` command): Transform raw challenge description into structured specification with:
+   - User stories (Part 1 = P1, Part 2 = P2)
+   - Acceptance criteria from puzzle examples
+   - Edge cases and requirements
+2. **Tasks Phase** (`tasks` command): Generate TDD task list from spec:
+   - Tasks organized by user story (Part 1 tasks, Part 2 tasks)
+   - RED tasks (write tests first)
+   - GREEN tasks (implement solution)
+   - REFACTOR tasks (optimize/clean)
+
+**The planning phase is SKIPPED** for Advent of Code since:
+
+- No complex architecture needed
+- Structure is predefined (Principle II)
+- Technical context is constant (Python 3.10+, pytest)
+
+**Rationale**: Specify framework ensures systematic breakdown of puzzle requirements into testable increments. The spec → tasks flow enforces TDD discipline by making test-first workflow explicit in the task list. Skipping the plan phase keeps overhead minimal for time-sensitive competition.
+
 ## Code Structure Requirements
 
 **Project Root**: Contains the meta runner script and main `README.md`
@@ -91,21 +115,50 @@ The main `README.md` MUST be kept current with:
 **Dependency Management**: UV MUST be used for Python package management
 
 **Version Control**: Git MUST be used; commits pushed directly to main branch are permitted for this project
+
+**Specify Framework Integration**:
+
+- Specifications stored in `specs/day-XX/spec.md`
+- Tasks stored in `specs/day-XX/tasks.md`
+- Plan phase skipped (not applicable for Advent of Code)
+- Constitution check automated via Specify templates
+
 **Workflow Order** (TDD-enforced):
 
-1. Run meta runner to download task and generate test inputs (might need user to run a prompt template to parse the day's task)
-2. **RED**: Write test cases using sample inputs - verify tests FAIL
-3. **GREEN**: Implement solution functions to make tests pass
-4. **REFACTOR**: Clean up code while maintaining green tests
-5. Run solution against actual input
-6. Submit via automated validation
-7. Commit with clear message
-8. Update progress trackertions
-9. Validate against tests
-10. Run solution against actual input
-11. Submit via automated validation
-12. Commit with clear message
-13. Update progress tracker
+1. Run meta runner to download challenge description and inputs
+
+   - Downloads task from Advent of Code website
+   - Creates `day-XX/` folder
+   - Downloads `input.txt`
+   - Generates `test_input.txt` from puzzle examples
+
+2. **SPEC**: Run `specify` command to create structured specification
+   - Input: Raw challenge description
+   - Output: `specs/day-XX/spec.md` with:
+     - User Story 1 (Part 1) with acceptance criteria
+     - User Story 2 (Part 2) with acceptance criteria
+     - Edge cases and requirements
+3. **TASKS**: Run `tasks` command to generate TDD task breakdown
+
+   - Input: `specs/day-XX/spec.md`
+   - Output: `specs/day-XX/tasks.md` with:
+     - Part 1 tasks (RED → GREEN → REFACTOR)
+     - Part 2 tasks (RED → GREEN → REFACTOR)
+     - Tasks explicitly ordered for TDD workflow
+
+4. Execute tasks in order from `tasks.md`:
+
+   - **RED**: Write test cases in `day-XX/test_solution.py` - verify tests FAIL
+   - **GREEN**: Implement solution functions in `day-XX/solution.py` to make tests pass
+   - **REFACTOR**: Clean up code while maintaining green tests
+
+5. Run solution against actual input using meta runner
+
+6. Submit answer via meta runner automated validation
+
+7. Commit with clear message (e.g., `feat: solve day XX part 1` or `feat: solve day XX complete`)
+
+8. Update progress tracker in main `README.md`
 
 **No Pull Requests Required**: Direct commits to main are acceptable given the solo, time-sensitive nature of Advent of Code challenges.
 
@@ -117,9 +170,6 @@ The main `README.md` MUST be kept current with:
 
 **Enforcement**: Pre-commit hooks MAY be used to enforce linting (Ruff) and test execution. Manual validation is acceptable during active competition. TDD compliance is enforced through workflow discipline.
 
-**Version**: 1.1.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
-**Complexity Justification**: If a solution requires deviation from these principles (e.g., skipping tests for extreme time pressure), the reason MUST be documented in the day's `README.md`.
+**Amendment Process**: Constitution updates follow semantic versioning. MINOR version bumps (e.g., adding workflow clarifications) require validation across all Specify templates for consistency.
 
-**Enforcement**: Pre-commit hooks MAY be used to enforce linting (Ruff) and test execution. Manual validation is acceptable during active competition.
-
-**Version**: 1.0.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
+**Version**: 1.2.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
