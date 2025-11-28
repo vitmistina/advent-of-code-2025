@@ -1,24 +1,26 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.1.0 → 1.2.0
+Version Change: 1.2.0 → 1.3.0
 Modified Principles:
-  - Principle V: "Automation First" - Clarified meta runner role (downloads only)
-  - NEW Principle VII: "Specification-Driven Workflow" - Added Specify framework integration
+  - Principle V: "Automation First" → "Automation & Manual Submission" (scope bounded; removes auto-posting)
+  - Principle VII: "Specification-Driven Workflow" (unchanged; references updated to CLI scope)
 Added Sections:
-  - Specify Framework Workflow (detailed spec → tasks process)
-  - Updated Workflow Order with explicit Specify commands
-Removed Sections: None
+  - AoC Compliance & Rate Limiting
+  - Delightful CLI Principle (new Principle VIII)
+Removed Sections:
+  - Automatic answer submission references
 
 Templates Status:
-  ✅ plan-template.md - Reviewed, aligns with new workflow (Advent of Code doesn't use plan phase)
-  ✅ spec-template.md - Reviewed, user stories map to puzzle parts
-  ✅ tasks-template.md - Reviewed, TDD pattern enforced in task generation
-  ⚠️ No commands directory - not applicable
+  ⚠️ .specify/templates/plan-template.md — Needs note: plan skipped for AoC remains; add CLI usability check
+  ⚠️ .specify/templates/spec-template.md — No changes required; add CLI linkage section
+  ⚠️ .specify/templates/tasks-template.md — Add manual submission step at end; remove auto-post
+  ⚠️ README.md — Add progress tracker and CLI usage section
 
 Follow-up TODOs:
-  - Create README.md at project root with progress tracker (Principle VI requirement)
-  - Create meta runner script (Principle V requirement)
+  - TODO(README): Add CLI overview and manual submission instructions
+  - TODO(meta runner): Implement rate limiting/backoff and dry-run; disable auto submission
+  - TODO(gitignore): Ensure `.env`, `cache/`, and inputs are ignored
 -->
 
 # Advent of Code 2025 Constitution
@@ -69,13 +71,24 @@ A meta runner script at the root level MUST handle:
 - Downloading `input.txt` (if not present)
 - Generating `test_input.txt` from task description examples (with support for multiple test input files for different parts)
 - Running solutions against inputs
-- Validating answers against the Advent of Code website
+- Producing result outputs locally for manual submission by the user
 
 Session tokens MUST be stored in a `.env` file for authentication.
 
-**Rationale**: Automation reduces manual steps, prevents errors from copy-paste mistakes, and allows focus on problem-solving. The meta runner handles external integration only; solution planning and task generation are handled by the Specify framework (see Principle VII).
+**Rationale**: Automation reduces manual steps, prevents errors from copy-paste mistakes, and allows focus on problem-solving. In compliance with Advent of Code rules, answers MUST NOT be auto-submitted; the CLI will optimize local workflows and guide manual submission. Solution planning and task generation are handled by the Specify framework (see Principle VII).
 
-### VI. Documentation & Progress Tracking
+### VI. AoC Compliance & Rate Limiting
+
+All interactions with Advent of Code MUST comply with site rules:
+
+- No automated answer submissions; submission is MANUAL by the user.
+- Respect rate limits: implement exponential backoff on downloads.
+- Include a dry-run mode for any network actions.
+- Session token `AOC_SESSION` MUST be kept secret, never logged.
+
+**Rationale**: Compliance protects the account and community, ensuring fair use while still benefiting from helpful automation for local tasks.
+
+### VII. Documentation & Progress Tracking
 
 The main `README.md` MUST be kept current with:
 
@@ -84,7 +97,7 @@ The main `README.md` MUST be kept current with:
 
 **Rationale**: Documentation captures insights and patterns discovered during problem-solving, provides motivation through visible progress, and helps identify knowledge gaps.
 
-### VII. Specification-Driven Workflow
+### VIII. Specification-Driven Workflow
 
 **Specify framework MUST be used to convert challenge descriptions into executable tasks**:
 
@@ -105,6 +118,18 @@ The main `README.md` MUST be kept current with:
 - Technical context is constant (Python 3.10+, pytest)
 
 **Rationale**: Specify framework ensures systematic breakdown of puzzle requirements into testable increments. The spec → tasks flow enforces TDD discipline by making test-first workflow explicit in the task list. Skipping the plan phase keeps overhead minimal for time-sensitive competition.
+
+### IX. Delightful CLI
+
+The CLI MUST be a delight to use:
+
+- Clear, friendly messages and concise progress output.
+- Consistent, beautiful design with color, symbols, and helpful tips.
+- Discoverable commands (`--help` rich output) and ergonomic flags.
+- Safe defaults, interactive prompts for risky actions, and dry-run options.
+- Fast startup, responsive UX, and useful error messages.
+
+**Rationale**: A high-quality developer experience keeps momentum during AoC. A delightful CLI reduces friction and errors, making manual submission and daily workflows efficient and enjoyable.
 
 ## Code Structure Requirements
 
@@ -154,7 +179,7 @@ The main `README.md` MUST be kept current with:
 
 5. Run solution against actual input using meta runner
 
-6. Submit answer via meta runner automated validation
+6. Prepare answer for MANUAL submission (CLI prints results, next steps)
 
 7. Commit with clear message (e.g., `feat: solve day XX part 1` or `feat: solve day XX complete`)
 
@@ -170,6 +195,12 @@ The main `README.md` MUST be kept current with:
 
 **Enforcement**: Pre-commit hooks MAY be used to enforce linting (Ruff) and test execution. Manual validation is acceptable during active competition. TDD compliance is enforced through workflow discipline.
 
-**Amendment Process**: Constitution updates follow semantic versioning. MINOR version bumps (e.g., adding workflow clarifications) require validation across all Specify templates for consistency.
+**Amendment Process**: Constitution updates follow semantic versioning with examples:
 
-**Version**: 1.2.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
+- PATCH: Wording clarifications, typos, non-functional edits.
+- MINOR: Add or expand principles (e.g., CLI principle), change workflow scope without breaking previous commitments.
+- MAJOR: Remove or redefine non-negotiable rules (e.g., altering TDD requirements).
+
+All MINOR/MAJOR changes MUST be validated across Specify templates and README.
+
+**Version**: 1.3.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
