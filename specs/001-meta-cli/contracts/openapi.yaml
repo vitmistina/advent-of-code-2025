@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: AoC 2025 Meta Runner CLI Contracts
+  version: 1.0.0
+paths:
+  /meta/scaffold:
+    post:
+      summary: Scaffold a new day folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                day:
+                  type: integer
+                  minimum: 1
+                  maximum: 25
+              required: [day]
+      responses:
+        '200':
+          description: Scaffolded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  createdFiles:
+                    type: array
+                    items:
+                      type: string
+  /meta/download:
+    post:
+      summary: Download description and input
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                day:
+                  type: integer
+                year:
+                  type: integer
+                dryRun:
+                  type: boolean
+              required: [day]
+      responses:
+        '200':
+          description: Download status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloaded:
+                    type: boolean
+                  messages:
+                    type: array
+                    items:
+                      type: string
+  /meta/specify:
+    post:
+      summary: Generate spec and tasks via Specify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                day:
+                  type: integer
+              required: [day]
+      responses:
+        '200':
+          description: Paths to generated artifacts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  specPath:
+                    type: string
+                  tasksPath:
+                    type: string

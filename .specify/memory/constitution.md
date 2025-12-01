@@ -1,26 +1,24 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version Change: 1.2.0 → 1.3.0
+Version Change: 1.3.0 → 1.4.0
 Modified Principles:
-  - Principle V: "Automation First" → "Automation & Manual Submission" (scope bounded; removes auto-posting)
-  - Principle VII: "Specification-Driven Workflow" (unchanged; references updated to CLI scope)
+  - Principle V: "Automation First" → "Automation & Manual Submission" (unchanged scope); clarified runtime to use `uv run`
+  - Code Structure Requirements: Dependency Management clarified to require `uv run` for all executions
 Added Sections:
-  - AoC Compliance & Rate Limiting
-  - Delightful CLI Principle (new Principle VIII)
+  - Runtime Execution Policy (new subsection under Code Structure Requirements)
 Removed Sections:
-  - Automatic answer submission references
+  - None
 
 Templates Status:
-  ⚠️ .specify/templates/plan-template.md — Needs note: plan skipped for AoC remains; add CLI usability check
-  ⚠️ .specify/templates/spec-template.md — No changes required; add CLI linkage section
-  ⚠️ .specify/templates/tasks-template.md — Add manual submission step at end; remove auto-post
-  ⚠️ README.md — Add progress tracker and CLI usage section
+  ✅ .specify/templates/plan-template.md — Constitution Check remains aligned
+  ✅ .specify/templates/spec-template.md — No changes required
+  ✅ .specify/templates/tasks-template.md — No changes required
+  ✅ specs/001-meta-cli/quickstart.md — Updated commands to `uv run`
 
 Follow-up TODOs:
-  - TODO(README): Add CLI overview and manual submission instructions
-  - TODO(meta runner): Implement rate limiting/backoff and dry-run; disable auto submission
-  - TODO(gitignore): Ensure `.env`, `cache/`, and inputs are ignored
+  - TODO(README): Add CLI overview and examples using `uv run`
+  - TODO(meta runner): Ensure help text and docs reference `uv run`
 -->
 
 # Advent of Code 2025 Constitution
@@ -139,6 +137,9 @@ The CLI MUST be a delight to use:
 
 **Dependency Management**: UV MUST be used for Python package management
 
+**Runtime Execution Policy**: All Python commands MUST be executed via `uv run`.
+Examples: `uv run -m cli.meta_runner scaffold --day 1` and `uv run day-01/solution.py`.
+
 **Version Control**: Git MUST be used; commits pushed directly to main branch are permitted for this project
 
 **Specify Framework Integration**:
@@ -203,4 +204,4 @@ The CLI MUST be a delight to use:
 
 All MINOR/MAJOR changes MUST be validated across Specify templates and README.
 
-**Version**: 1.3.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
+**Version**: 1.4.0 | **Ratified**: 2025-11-28 | **Last Amended**: 2025-11-28
