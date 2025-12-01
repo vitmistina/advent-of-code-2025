@@ -92,10 +92,116 @@ def solve_part1(rotations: list[tuple[str, int]]) -> int:
     return zero_count
 
 
-def solve_part2(data) -> int:
-    """Solve Part 2 of the puzzle."""
-    # TODO: Implement Part 2 solution
-    return 0
+def count_zero_crossings_during_rotation(start_position: int, direction: str, distance: int) -> int:
+    """
+    Count how many times position 0 is crossed during rotation.
+
+    This counts intermediate crossings DURING the rotation, not including
+    the start or end positions.
+
+    Time complexity: O(1)
+    Space complexity: O(1)
+
+    Args:
+        start_position: Current dial position (0-99)
+        direction: 'L' for left (decrease) or 'R' for right (increase)
+        distance: Number of clicks to rotate
+
+    Returns:
+        Number of times position 0 is crossed during rotation
+
+    Examples:
+        >>> count_zero_crossings_during_rotation(50, 'R', 1000)
+        10
+        >>> count_zero_crossings_during_rotation(99, 'R', 1)
+        1
+        >>> count_zero_crossings_during_rotation(50, 'L', 60)
+        1
+    """
+    if distance == 0:
+        return 0
+
+    if direction not in ("L", "R"):
+        raise ValueError(f"Direction must be 'L' or 'R', got: {direction}")
+
+    start_position = start_position % 100
+
+    if direction == "R":
+        # Right rotation: count how many times we pass through 0 DURING rotation
+        # Not including the final position
+        end_position = (start_position + distance) % 100
+        total_crossings = (start_position + distance) // 100
+
+        # If we start at 0, the first "crossing" is just the starting position
+        if start_position == 0 and total_crossings > 0:
+            total_crossings -= 1
+
+        # If we end at 0, don't count it (it's the end position, not during)
+        if end_position == 0 and total_crossings > 0:
+            total_crossings -= 1
+
+        return total_crossings
+    else:  # 'L'
+        # Left rotation: count how many times we cross 0 going backward
+        # Not including start or end positions
+        if start_position == 0:
+            return 0
+        if distance < start_position:
+            return 0
+
+        # Calculate end position
+        end_position = (start_position - distance) % 100
+
+        # First crossing happens when we reach 0 from above
+        remaining_after_first_cross = distance - start_position
+        additional_crossings = remaining_after_first_cross // 100
+        total_crossings = 1 + additional_crossings
+
+        # If we end exactly at 0, don't count it (it's the end position, not during)
+        if end_position == 0:
+            total_crossings -= 1
+
+        return total_crossings
+
+
+def solve_part2(rotations: list[tuple[str, int]]) -> int:
+    """
+    Solve Part 2: Count all clicks where dial points at 0.
+
+    Counts both:
+    1. Zero crossings DURING rotations (intermediate positions)
+    2. Zero end-positions AFTER rotations (final positions)
+
+    Time complexity: O(n) where n = number of rotations
+    Space complexity: O(1)
+
+    Args:
+        rotations: List of (direction, distance) tuples
+
+    Returns:
+        Total number of times the dial pointed at 0 (during + after rotations)
+
+    Example:
+        >>> rotations = [('L', 68), ('R', 48), ('L', 55)]
+        >>> solve_part2(rotations)
+        # Returns count of all zero crossings
+    """
+    position = 50  # Dial starts at 50
+    total_zero_count = 0
+
+    for direction, distance in rotations:
+        # Count zeros crossed DURING rotation
+        during_count = count_zero_crossings_during_rotation(position, direction, distance)
+        total_zero_count += during_count
+
+        # Apply rotation to get new position
+        position = apply_rotation(position, direction, distance)
+
+        # Count if ended at 0
+        if position == 0:
+            total_zero_count += 1
+
+    return total_zero_count
 
 
 def main():

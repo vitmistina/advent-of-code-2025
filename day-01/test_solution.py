@@ -90,13 +90,75 @@ def test_solve_part1_no_zeros():
 
 
 # ============================================================================
-# Part 2 (placeholder - will be updated when Part 2 unlocks)
+# User Story 1: Count All Zero Crossings - Part 2 RED Phase Tests
 # ============================================================================
 
 
-def test_part2(parsed_test_data):
-    """Test Part 2 with example input."""
+@pytest.mark.parametrize("start,direction,distance,expected", [
+    # Zero distance edge case
+    (50, "R", 0, 0),
+    (50, "L", 0, 0),
+    # Right rotation - no crossing
+    (50, "R", 40, 0),
+    # Right rotation - single crossing (99->0 crosses during)
+    (99, "R", 1, 0),  # Ends at 0, so during=0 (end position doesn't count as "during")
+    # Right rotation - exact wrap from 0
+    (0, "R", 100, 0),  # Starts at 0, ends at 0, during=0
+    # Right rotation - multi-wrap
+    (50, "R", 1000, 10),  # Crosses 0 ten times during
+    # Left rotation - don't reach 0
+    (50, "L", 30, 0),
+    # Left rotation - cross once
+    (50, "L", 60, 1),  # Crosses 0 once during, ends at 90
+    # Left rotation - from 0 (don't count start)
+    (0, "L", 1, 0),  # Starts at 0, moves to 99, during=0
+    # Left rotation - multi-wrap ending at 0
+    (50, "L", 250, 2),  # 50->0 (1st), 0->-100 wraps to 0 (2nd), ends at 0 (not counted)
+])
+def test_count_zero_crossings_during_rotation(start, direction, distance, expected):
+    """Test counting zero crossings during rotation (T004 - RED Phase)."""
+    from solution import count_zero_crossings_during_rotation
+    result = count_zero_crossings_during_rotation(start, direction, distance)
+    assert result == expected, f"Position {start}, {direction}{distance}: expected {expected}, got {result}"
+
+
+def test_solve_part2_sample_input(parsed_test_data):
+    """Test Part 2 with sample input - should return 6 total (T005 - RED Phase)."""
     result = solve_part2(parsed_test_data)
-    # TODO: Replace with expected answer from puzzle
-    expected = 0
+    expected = 6  # 3 during + 3 at end
     assert result == expected, f"Expected {expected}, got {result}"
+
+
+# ============================================================================
+# User Story 3: Backward Compatibility - Part 1 Validation
+# ============================================================================
+
+
+def test_part1_unchanged(parsed_test_data):
+    """Test Part 1 solution unchanged - should return 3 (T022)."""
+    result = solve_part1(parsed_test_data)
+    expected = 3
+    assert result == expected, f"Part 1 broken! Expected {expected}, got {result}"
+
+
+def test_part2_includes_part1(parsed_test_data):
+    """Test Part 2 >= Part 1 invariant (T023)."""
+    part1_result = solve_part1(parsed_test_data)
+    part2_result = solve_part2(parsed_test_data)
+    assert part2_result >= part1_result, \
+        f"Part 2 ({part2_result}) should be >= Part 1 ({part1_result})"
+
+
+def test_part2_includes_part1_custom_inputs():
+    """Test Part 2 >= Part 1 with custom inputs (T023)."""
+    test_cases = [
+        [("R", 50)],  # Single rotation ending at 0
+        [("L", 68), ("R", 48)],  # Multiple rotations
+        [("R", 1000)],  # Large distance
+    ]
+    
+    for rotations in test_cases:
+        part1 = solve_part1(rotations)
+        part2 = solve_part2(rotations)
+        assert part2 >= part1, \
+            f"Rotations {rotations}: Part 2 ({part2}) should be >= Part 1 ({part1})"
