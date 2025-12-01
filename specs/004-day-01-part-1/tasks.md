@@ -63,39 +63,46 @@ description: "Task list for Day 1 Part 1 implementation"
 **CRITICAL**: These tests MUST be written first and verified to FAIL before any implementation
 
 - [ ] T006 [P] [US1] Write test_parse_input_sample in day-01/test_solution.py
+
   - Test parsing the 10-line sample input
   - Verify first rotation is ('L', 68)
   - Verify last rotation is ('L', 82)
   - **Run and verify it FAILS** ❌
 
 - [ ] T007 [P] [US1] Write test_parse_input_empty in day-01/test_solution.py
+
   - Test parsing empty input
   - Verify returns empty list
   - **Run and verify it FAILS** ❌
 
 - [ ] T008 [P] [US1] Write test_apply_rotation_left in day-01/test_solution.py
+
   - Test left rotation: 50 → L68 → 82
   - Test left rotation: 82 → L30 → 52
   - Test wraparound: 5 → L10 → 95
   - **Run and verify it FAILS** ❌
 
 - [ ] T009 [P] [US1] Write test_apply_rotation_right in day-01/test_solution.py
+
   - Test right rotation: 52 → R48 → 0
   - Test right rotation: 95 → R60 → 55
   - Test wraparound: 99 → R1 → 0
   - **Run and verify it FAILS** ❌
 
 - [ ] T010 [P] [US1] Write test_apply_rotation_zero_distance in day-01/test_solution.py
+
   - Test no movement: 50 → L0 → 50
   - Test no movement: 50 → R0 → 50
   - **Run and verify it FAILS** ❌
 
 - [ ] T011 [US1] Write test_solve_part1_sample in day-01/test_solution.py
+
   - Test with full sample input (10 rotations)
   - Verify result is 3
   - **Run and verify it FAILS** ❌
 
 - [ ] T012 [P] [US1] Write test_solve_part1_empty in day-01/test_solution.py
+
   - Test with empty rotation list
   - Verify result is 0
   - **Run and verify it FAILS** ❌
@@ -111,18 +118,21 @@ description: "Task list for Day 1 Part 1 implementation"
 ### GREEN Phase - Implement to Pass Tests
 
 - [ ] T014 [US1] Implement parse_input() in day-01/solution.py
+
   - Parse multi-line string into list of (direction, distance) tuples
   - Handle empty lines (skip them)
   - Extract direction from line[0], distance from int(line[1:])
   - **Run tests - T006, T007 should now PASS** ✅
 
 - [ ] T015 [US1] Implement apply_rotation() in day-01/solution.py
+
   - Left rotation: `(position - distance) % 100`
   - Right rotation: `(position + distance) % 100`
   - Handle wraparound via modulo arithmetic
   - **Run tests - T008, T009, T010 should now PASS** ✅
 
 - [ ] T016 [US1] Implement solve_part1() in day-01/solution.py
+
   - Initialize position to 50, zero_count to 0
   - Iterate through rotations
   - Apply each rotation, increment count if position == 0
@@ -138,17 +148,20 @@ description: "Task list for Day 1 Part 1 implementation"
 ### REFACTOR Phase - Clean Up Code
 
 - [ ] T018 [US1] Add type hints to all functions in day-01/solution.py
+
   - parse_input(input_text: str) -> list[tuple[str, int]]
   - apply_rotation(position: int, direction: str, distance: int) -> int
   - solve_part1(rotations: list[tuple[str, int]]) -> int
   - **Run tests - all should still PASS** ✅
 
 - [ ] T019 [US1] Add comprehensive docstrings in day-01/solution.py
+
   - Document parameters, return values, behavior
   - Include example usage in docstrings
   - **Run tests - all should still PASS** ✅
 
 - [ ] T020 [US1] Run linting and formatting in day-01/
+
   - `uv run ruff check day-01/solution.py`
   - `uv run ruff format day-01/solution.py`
   - Fix any issues raised
@@ -172,16 +185,19 @@ description: "Task list for Day 1 Part 1 implementation"
 ### RED Phase - Write Failing Tests First ⚠️
 
 - [ ] T022 [P] [US2] Write test_parse_input_invalid_direction in day-01/test_solution.py
+
   - Test with invalid direction (e.g., "X10")
   - Verify raises ValueError with message about invalid direction
   - **Run and verify it FAILS** ❌
 
 - [ ] T023 [P] [US2] Write test_parse_input_invalid_distance in day-01/test_solution.py
+
   - Test with non-numeric distance (e.g., "L10A")
   - Verify raises ValueError with message about invalid distance
   - **Run and verify it FAILS** ❌
 
 - [ ] T024 [P] [US2] Write test_parse_input_empty_line_handling in day-01/test_solution.py
+
   - Test with mixed empty and valid lines
   - Verify empty lines are skipped, valid lines parsed
   - **Run and verify it FAILS** ❌
@@ -196,12 +212,14 @@ description: "Task list for Day 1 Part 1 implementation"
 ### GREEN Phase - Implement Error Handling
 
 - [ ] T026 [US2] Add input validation to parse_input() in day-01/solution.py
+
   - Check direction in ('L', 'R'), raise ValueError if not
   - Wrap int() conversion in try/except, raise ValueError if fails
   - Include line content in error messages
   - **Run tests - T022, T023, T024 should now PASS** ✅
 
 - [ ] T027 [US2] Add validation to apply_rotation() in day-01/solution.py
+
   - Check direction in ('L', 'R'), raise ValueError if not
   - Include direction value in error message
   - **Run tests - T025 should now PASS** ✅
@@ -216,6 +234,7 @@ description: "Task list for Day 1 Part 1 implementation"
 ### REFACTOR Phase - Clean Up Error Handling
 
 - [ ] T029 [US2] Improve error messages in day-01/solution.py
+
   - Make messages descriptive and user-friendly
   - Include context (what was expected, what was received)
   - **Run tests - all should still PASS** ✅
@@ -272,42 +291,50 @@ description: "Task list for Day 1 Part 1 implementation"
 **Purpose**: Final improvements affecting the complete solution
 
 - [ ] T034 Run complete test suite
+
   - `uv run pytest day-01/test_solution.py -v`
   - Verify all tests pass (should be 13+ tests total)
   - Check coverage if desired: `uv run pytest day-01/test_solution.py --cov=day-01`
 
 - [ ] T035 Final code review of day-01/solution.py
+
   - All functions have type hints ✅
   - All functions have docstrings ✅
   - Code is PEP 8 compliant ✅
   - No TODO comments remaining ✅
 
 - [ ] T036 Verify solution with test input
+
   - `uv run day-01/solution.py` (should use input.txt)
   - Manually check against test_input.txt
   - Verify sample returns 3
 
 - [ ] T037 Run solution against actual input
+
   - `uv run day-01/solution.py`
   - Get Part 1 answer
   - **Ready for manual submission** 🎯
 
 - [ ] T038 [P] Create day-01/README.md (optional)
+
   - Document puzzle approach
   - Note circular arithmetic solution
   - Include performance notes
 
 - [ ] T039 [P] Run quickstart.md validation
+
   - Follow steps in specs/004-day-01-part-1/quickstart.md
   - Verify all commands work
   - Update if anything has changed
 
 - [ ] T040 Update main README.md progress tracker
+
   - Mark Day 1 Part 1 as complete ✅
   - Add stars earned: ⭐
   - Note completion date
 
 - [ ] T041 Commit and push
+
   - `git add day-01/`
   - `git commit -m "feat: solve day 01 part 1"`
   - `git push origin 004-day-01-part-1`
@@ -341,6 +368,7 @@ description: "Task list for Day 1 Part 1 implementation"
 ### TDD Workflow (Within Each User Story)
 
 **CRITICAL ORDER**:
+
 1. **RED**: Write all tests FIRST (T006-T013 for US1)
 2. **Verify FAIL**: Run tests and confirm they fail ❌
 3. **GREEN**: Implement code to make tests pass (T014-T017 for US1)
@@ -352,15 +380,18 @@ description: "Task list for Day 1 Part 1 implementation"
 ### Parallel Opportunities
 
 **Within RED Phase**:
+
 - All test-writing tasks marked [P] can be written in parallel
 - T006, T007, T008, T009, T010, T012, T013 (US1 tests)
 - T022, T023, T024, T025 (US2 tests)
 
 **Within REFACTOR Phase**:
+
 - T018 (type hints) and T019 (docstrings) can be done in parallel if desired
 - T034 and T038, T039 (documentation) can be done in parallel
 
 **Across User Stories** (if multiple developers):
+
 - Once US1 is complete, US2 and US3 can proceed in parallel
 - US2 enhances error handling
 - US3 validates performance
@@ -391,6 +422,7 @@ uv run pytest day-01/test_solution.py -v  # All should be RED ❌
 ### MVP First (User Story 1 Only)
 
 **Recommended for AoC speed**:
+
 1. ✅ Complete Phase 1: Setup (already done)
 2. Complete Phase 3: User Story 1 (core functionality)
    - RED: Write tests (T006-T013)
@@ -402,6 +434,7 @@ uv run pytest day-01/test_solution.py -v  # All should be RED ❌
 ### Complete Implementation (All Stories)
 
 **Recommended for practice and robustness**:
+
 1. ✅ Complete Phase 1: Setup (already done)
 2. Complete Phase 3: User Story 1 (TDD: RED → GREEN → REFACTOR)
 3. Complete Phase 4: User Story 2 (error handling)

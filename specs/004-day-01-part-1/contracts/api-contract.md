@@ -16,12 +16,14 @@ This document defines the function signatures, input/output contracts, and behav
 **Purpose**: Parse puzzle input into structured rotation instructions.
 
 **Input**:
+
 - `input_text`: str
   - Multi-line string from puzzle input file
   - Each line format: `<direction><distance>` (e.g., "L68", "R48")
   - May contain empty lines (will be ignored)
 
 **Output**:
+
 - `list[tuple[str, int]]`
   - List of rotation tuples (direction, distance)
   - Direction: 'L' or 'R'
@@ -29,6 +31,7 @@ This document defines the function signatures, input/output contracts, and behav
   - Empty list if no valid rotations
 
 **Behavior**:
+
 - Strips leading/trailing whitespace from input
 - Splits on newlines
 - Skips empty lines after stripping
@@ -37,12 +40,14 @@ This document defines the function signatures, input/output contracts, and behav
 - Preserves order of rotations
 
 **Exceptions**:
+
 - `ValueError`: If line has invalid direction (not L or R)
   - Message: `"Invalid direction '{direction}' in line: {line}"`
 - `ValueError`: If line has non-numeric distance
   - Message: `"Invalid distance in line: {line}"`
 
 **Example**:
+
 ```python
 input_text = """L68
 L30
@@ -52,6 +57,7 @@ assert result == [('L', 68), ('L', 30), ('R', 48)]
 ```
 
 **Edge Cases**:
+
 ```python
 # Empty input
 parse_input("") == []
@@ -76,6 +82,7 @@ parse_input("L10A") → ValueError
 **Purpose**: Apply a single rotation to the dial and return the new position.
 
 **Input**:
+
 - `position`: int
   - Current dial position (0-99)
   - Precondition: `0 <= position < 100`
@@ -86,20 +93,24 @@ parse_input("L10A") → ValueError
   - Typically non-negative, but function handles negative as reverse
 
 **Output**:
+
 - `int`
   - New dial position after rotation (0-99)
   - Postcondition: `0 <= result < 100`
 
 **Behavior**:
+
 - Left rotation ('L'): `new_position = (position - distance) % 100`
 - Right rotation ('R'): `new_position = (position + distance) % 100`
 - Wraps around correctly at boundaries (0 ↔ 99)
 
 **Exceptions**:
+
 - `ValueError`: If direction not in ('L', 'R')
   - Message: `"Direction must be 'L' or 'R', got: {direction}"`
 
 **Example**:
+
 ```python
 # Basic rotations
 apply_rotation(50, 'L', 68) == 82
@@ -120,6 +131,7 @@ apply_rotation(10, 'R', 250) == 60  # (10 + 250) % 100 = 260 % 100 = 60
 ```
 
 **Edge Cases**:
+
 ```python
 # Position at boundaries
 apply_rotation(0, 'L', 1) == 99
@@ -139,18 +151,21 @@ apply_rotation(50, 'X', 10) → ValueError
 **Purpose**: Count how many times dial points at 0 after any rotation in the sequence.
 
 **Input**:
+
 - `rotations`: list[tuple[str, int]]
   - Sequence of rotation instructions
   - Each tuple: (direction, distance)
   - May be empty list
 
 **Output**:
+
 - `int`
   - Count of times dial pointed at 0 after a rotation
   - Zero or positive integer
   - Does NOT count initial position (dial starts at 50)
 
 **Behavior**:
+
 - Initialize position to 50, zero_count to 0
 - For each rotation in sequence:
   1. Apply rotation to get new position
@@ -158,9 +173,11 @@ apply_rotation(50, 'X', 10) → ValueError
 - Return zero_count
 
 **Exceptions**:
+
 - None (assumes valid input from parse_input)
 
 **Example**:
+
 ```python
 # Puzzle example (should return 3)
 rotations = [
@@ -183,6 +200,7 @@ assert solve_part1([('R', 50)]) == 1  # 50 + 50 = 100 % 100 = 0
 ```
 
 **Edge Cases**:
+
 ```python
 # All rotations land on zero
 rotations = [('R', 50), ('R', 100), ('L', 100)]
@@ -225,6 +243,7 @@ These functions are not required but may improve code organization:
 **Purpose**: Main execution entry point for the solution script.
 
 **Behavior**:
+
 1. Read input from `day-01/input.txt`
 2. Parse input into rotations
 3. Solve Part 1
@@ -232,6 +251,7 @@ These functions are not required but may improve code organization:
 5. (Part 2 will be added after Part 1 completion)
 
 **Example Output**:
+
 ```
 Part 1: 123
 Part 2: 0
@@ -243,26 +263,26 @@ Part 2: 0
 
 ## Contract Summary Table
 
-| Function | Input Types | Output Type | Can Raise | Complexity |
-|----------|-------------|-------------|-----------|------------|
-| `parse_input` | str | list[tuple[str, int]] | ValueError | O(n) |
-| `apply_rotation` | int, str, int | int | ValueError | O(1) |
-| `solve_part1` | list[tuple[str, int]] | int | - | O(n) |
-| `main` | - | None | IOError | O(n) |
+| Function         | Input Types           | Output Type           | Can Raise  | Complexity |
+| ---------------- | --------------------- | --------------------- | ---------- | ---------- |
+| `parse_input`    | str                   | list[tuple[str, int]] | ValueError | O(n)       |
+| `apply_rotation` | int, str, int         | int                   | ValueError | O(1)       |
+| `solve_part1`    | list[tuple[str, int]] | int                   | -          | O(n)       |
+| `main`           | -                     | None                  | IOError    | O(n)       |
 
 ---
 
 ## Validation Against Requirements
 
-| Requirement | Contract Support |
-|------------|-----------------|
-| FR-001: Accept rotation sequence | ✅ `parse_input` returns list of rotations |
+| Requirement                         | Contract Support                                          |
+| ----------------------------------- | --------------------------------------------------------- |
+| FR-001: Accept rotation sequence    | ✅ `parse_input` returns list of rotations                |
 | FR-002: Start at 50, apply in order | ✅ `solve_part1` initializes at 50, iterates sequentially |
-| FR-003: Count zeros | ✅ `solve_part1` returns count |
-| FR-004: Handle invalid input | ✅ `parse_input` raises ValueError with clear messages |
-| FR-005: Process large files | ✅ O(n) complexity, efficient implementation |
-| FR-006: Circular wraparound | ✅ `apply_rotation` uses modulo 100 |
-| FR-007: Ignore empty lines | ✅ `parse_input` skips empty after strip |
+| FR-003: Count zeros                 | ✅ `solve_part1` returns count                            |
+| FR-004: Handle invalid input        | ✅ `parse_input` raises ValueError with clear messages    |
+| FR-005: Process large files         | ✅ O(n) complexity, efficient implementation              |
+| FR-006: Circular wraparound         | ✅ `apply_rotation` uses modulo 100                       |
+| FR-007: Ignore empty lines          | ✅ `parse_input` skips empty after strip                  |
 
 ---
 
@@ -271,6 +291,7 @@ Part 2: 0
 Each function contract above implies test cases:
 
 ### `parse_input` Tests
+
 - ✅ Valid multi-line input
 - ✅ Empty input
 - ✅ Empty lines mixed with valid
@@ -278,6 +299,7 @@ Each function contract above implies test cases:
 - ✅ Invalid distance raises ValueError
 
 ### `apply_rotation` Tests
+
 - ✅ Left rotation (no wrap)
 - ✅ Right rotation (no wrap)
 - ✅ Left wraparound (0→99)
@@ -287,6 +309,7 @@ Each function contract above implies test cases:
 - ✅ Invalid direction raises ValueError
 
 ### `solve_part1` Tests
+
 - ✅ Puzzle example (returns 3)
 - ✅ Empty rotations (returns 0)
 - ✅ No zeros in sequence (returns 0)

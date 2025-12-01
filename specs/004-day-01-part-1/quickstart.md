@@ -12,15 +12,18 @@ This quickstart guide helps developers get up to speed on implementing the Day 1
 ## Prerequisites
 
 **Required**:
+
 - Python 3.10 or higher
 - UV package manager (already installed)
 - Git (for commits)
 
 **Installed**:
+
 - pytest (in dev dependencies)
 - ruff (for linting/formatting)
 
 **Environment Setup**:
+
 ```bash
 # Verify Python version
 python --version  # Should be 3.10+
@@ -54,6 +57,7 @@ code day-01/description.md
 ```
 
 **Key Points**:
+
 - Dial has positions 0-99 (circular)
 - Starts at position 50
 - Rotations format: `L<distance>` or `R<distance>`
@@ -67,6 +71,7 @@ code specs/004-day-01-part-1/spec.md
 ```
 
 **Key Requirements** (FR-001 to FR-007):
+
 - Parse rotation instructions (L/R + distance)
 - Apply rotations with circular wraparound
 - Count zeros after each rotation
@@ -83,6 +88,7 @@ code specs/004-day-01-part-1/data-model.md
 ```
 
 **Core Functions to Implement**:
+
 ```python
 parse_input(input_text: str) -> list[tuple[str, int]]
 apply_rotation(position: int, direction: str, distance: int) -> int
@@ -133,6 +139,7 @@ def test_solve_part1_sample(parsed_test_data):
 ```
 
 **Run tests (should FAIL)**:
+
 ```bash
 uv run pytest day-01/test_solution.py -v
 ```
@@ -174,7 +181,7 @@ def apply_rotation(position: int, direction: str, distance: int) -> int:
     """Apply a single rotation to the dial."""
     if direction not in ('L', 'R'):
         raise ValueError(f"Direction must be 'L' or 'R', got: {direction}")
-    
+
     if direction == 'L':
         return (position - distance) % 100
     else:  # direction == 'R'
@@ -185,16 +192,17 @@ def solve_part1(rotations: list[tuple[str, int]]) -> int:
     """Count how many times dial points at 0 after rotations."""
     position = 50  # Dial starts at 50
     zero_count = 0
-    
+
     for direction, distance in rotations:
         position = apply_rotation(position, direction, distance)
         if position == 0:
             zero_count += 1
-    
+
     return zero_count
 ```
 
 **Run tests (should PASS)**:
+
 ```bash
 uv run pytest day-01/test_solution.py -v
 ```
@@ -206,6 +214,7 @@ uv run pytest day-01/test_solution.py -v
 ### Phase 3: REFACTOR - Clean Up
 
 **Check**:
+
 - ✅ Code is readable
 - ✅ No duplication
 - ✅ Type hints present
@@ -213,12 +222,14 @@ uv run pytest day-01/test_solution.py -v
 - ✅ PEP 8 compliant
 
 **Run linter**:
+
 ```bash
 uv run ruff check day-01/solution.py
 uv run ruff format day-01/solution.py
 ```
 
 **Re-run tests** (must still pass):
+
 ```bash
 uv run pytest day-01/test_solution.py -v
 ```
@@ -238,6 +249,7 @@ uv run day-01/solution.py
 ```
 
 **Expected Output**:
+
 ```
 Part 1: 3
 Part 2: 0
@@ -259,6 +271,7 @@ uv run day-01/solution.py
 ### Issue: Tests fail with "Module not found"
 
 **Solution**: Use pytest from the day folder or use module syntax
+
 ```bash
 # From repo root
 uv run pytest day-01/test_solution.py
@@ -271,6 +284,7 @@ uv run pytest test_solution.py
 ### Issue: Modulo gives unexpected results
 
 **Check**: Python's modulo handles negatives correctly
+
 ```python
 # Python modulo always returns non-negative for positive divisor
 (-5) % 100 == 95  # ✅ Correct
@@ -279,6 +293,7 @@ uv run pytest test_solution.py
 ### Issue: Wrong zero count
 
 **Debug**: Print positions after each rotation
+
 ```python
 for direction, distance in rotations:
     position = apply_rotation(position, direction, distance)
@@ -335,6 +350,7 @@ Before submitting, verify:
 ## Key Resources
 
 **Local Files**:
+
 - `specs/004-day-01-part-1/spec.md` - Feature specification
 - `specs/004-day-01-part-1/contracts/api-contract.md` - Function contracts
 - `specs/004-day-01-part-1/data-model.md` - Data structures
@@ -342,9 +358,11 @@ Before submitting, verify:
 - `day-01/description.md` - Puzzle description
 
 **Constitution**:
+
 - `.specify/memory/constitution.md` - Project rules and principles
 
 **Commands**:
+
 ```bash
 # Run tests
 uv run pytest day-01/test_solution.py -v
