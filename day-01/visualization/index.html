@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day 1 Dial Visualization</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Advent of Code 2025 – Day 1 Dial</h1>
+    </header>
+
+    <main>
+      <section id="canvas-section">
+        <canvas id="dialCanvas" width="800" height="800"></canvas>
+      </section>
+
+      <section id="controls-section">
+        <div class="controls">
+          <button id="playFromStartBtn">Play from Start</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="resumeBtn">Resume</button>
+
+          <label for="modePart1">
+            <input
+              type="radio"
+              name="mode"
+              id="modePart1"
+              value="part1"
+              checked
+            />
+            Part 1
+          </label>
+          <label for="modePart2">
+            <input type="radio" name="mode" id="modePart2" value="part2" />
+            Part 2
+          </label>
+
+          <div class="speed-control">
+            <label for="speedSlider">Speed</label>
+            <input
+              type="range"
+              id="speedSlider"
+              min="0.1"
+              max="10"
+              step="0.1"
+              value="1.0"
+            />
+            <input
+              type="number"
+              id="speedInput"
+              min="0.1"
+              max="10"
+              step="0.1"
+              value="1.0"
+            />
+            <span id="speedLabel">1.0x</span>
+          </div>
+
+          <div class="file-input">
+            <input type="file" id="fileInput" accept=".txt" />
+            <button id="loadTestInputBtn">Load Test Input</button>
+            <span id="errorMsg" aria-live="polite"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="dial-animation.js"></script>
+    <script type="module" src="audio-manager.js"></script>
+    <script type="module" src="ui-controls.js"></script>
+  </body>
+</html>
