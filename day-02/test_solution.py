@@ -167,3 +167,175 @@ def test_solve_part1_edge_cases():
     result = solve_part1("1698522-1698528")
     expected = 0
     assert result == expected, f"Expected {expected}, got {result}"
+
+
+# ============================================================================
+# PART 2 TESTS: Extended Pattern Detection (At Least Twice)
+# ============================================================================
+
+
+# ============================================================================
+# Phase 2: User Story 1 - Pattern Detection (RED Phase)
+# ============================================================================
+
+
+def test_is_invalid_id_part2():
+    """Test Part 2 pattern detection (at least twice).
+
+    Part 2 detects patterns repeated at least 2 times (vs exactly 2 in Part 1).
+    Examples: 11 (1×2), 111 (1×3), 565656 (56×3), 824824824 (824×3), 2121212121 (21×5)
+    """
+    from solution import is_invalid_id_part2
+
+    # Part 1 overlap (exactly twice - still invalid in Part 2)
+    assert is_invalid_id_part2(11), "11 is invalid (1×2)"
+    assert is_invalid_id_part2(22), "22 is invalid (2×2)"
+    assert is_invalid_id_part2(1010), "1010 is invalid (10×2)"
+
+    # NEW in Part 2 (three or more times)
+    assert is_invalid_id_part2(111), "111 is invalid (1×3)"
+    assert is_invalid_id_part2(565656), "565656 is invalid (56×3)"
+    assert is_invalid_id_part2(824824824), "824824824 is invalid (824×3)"
+    assert is_invalid_id_part2(2121212121), "2121212121 is invalid (21×5)"
+
+    # Still valid
+    assert not is_invalid_id_part2(101), "101 has no repeated pattern"
+    assert not is_invalid_id_part2(12345), "12345 has no repeated pattern"
+
+
+def test_check_range_part2_range_11_22():
+    """Test Part 2 range checking: 11-22 should contain [11, 22]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(11, 22)
+    expected = [11, 22]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_95_115():
+    """Test Part 2 range checking: 95-115 should contain [99, 111]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(95, 115)
+    expected = [99, 111]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_998_1012():
+    """Test Part 2 range checking: 998-1012 should contain [999, 1010]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(998, 1012)
+    expected = [999, 1010]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_1188511880_1188511890():
+    """Test Part 2 range checking: 1188511880-1188511890 should contain [1188511885]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(1188511880, 1188511890)
+    expected = [1188511885]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_222220_222224():
+    """Test Part 2 range checking: 222220-222224 should contain [222222]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(222220, 222224)
+    expected = [222222]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_1698522_1698528():
+    """Test Part 2 range checking: 1698522-1698528 should contain [] (no invalids)."""
+    from solution import check_range_part2
+
+    result = check_range_part2(1698522, 1698528)
+    expected = []
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_446443_446449():
+    """Test Part 2 range checking: 446443-446449 should contain [446446]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(446443, 446449)
+    expected = [446446]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_38593856_38593862():
+    """Test Part 2 range checking: 38593856-38593862 should contain [38593859]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(38593856, 38593862)
+    expected = [38593859]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_565653_565659():
+    """Test Part 2 range checking: 565653-565659 should contain [565656]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(565653, 565659)
+    expected = [565656]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_824824821_824824827():
+    """Test Part 2 range checking: 824824821-824824827 should contain [824824824]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(824824821, 824824827)
+    expected = [824824824]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_check_range_part2_range_2121212118_2121212124():
+    """Test Part 2 range checking: 2121212118-2121212124 should contain [2121212121]."""
+    from solution import check_range_part2
+
+    result = check_range_part2(2121212118, 2121212124)
+    expected = [2121212121]
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+# ============================================================================
+# Phase 3: User Story 2 - Multi-Range Aggregation (RED Phase)
+# ============================================================================
+
+
+def test_solve_part2_example():
+    """Test Part 2 with complete example input."""
+    from solution import solve_part2
+
+    example_input = (
+        "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,"
+        "1698522-1698528,446443-446449,38593856-38593862,565653-565659,"
+        "824824821-824824827,2121212118-2121212124"
+    )
+
+    result = solve_part2(example_input)
+    expected = 4174379265
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_solve_part2_multiple_ranges():
+    """Test Part 2 multi-range aggregation with subset."""
+    from solution import solve_part2
+
+    # Test with first two ranges: [11, 22] + [99, 111] = 243
+    result = solve_part2("11-22,95-115")
+    expected = 11 + 22 + 99 + 111  # 243
+    assert result == expected, f"Expected {expected}, got {result}"
+
+
+def test_solve_part2_empty_input():
+    """Test Part 2 with empty input."""
+    from solution import solve_part2
+
+    result = solve_part2("")
+    expected = 0
+    assert result == expected, f"Expected {expected}, got {result}"

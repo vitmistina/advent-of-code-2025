@@ -46,9 +46,51 @@ See [description.md](description.md) for full problem statement.
 - **TDD approach** caught edge cases early (odd-length, single digits)
 - **Incremental implementation** enabled independent testing per user story
 
-## Part 2
+## Part 2: Extended Pattern Detection (At Least Twice)
 
-_Not yet attempted_
+**Answer**: `11323661261`
+
+### Approach
+
+**Algorithm**: Divisor-based pattern matching
+
+- Part 2 extends Part 1 by detecting patterns repeated **at least twice** (vs exactly twice)
+- Examples: 111 (1×3), 565656 (56×3), 824824824 (824×3), 2121212121 (21×5)
+- Part 2 is a **superset** of Part 1 (includes all Part 1 invalids plus more)
+
+**Algorithm Details**:
+
+1. Convert number to string
+2. Iterate through all divisors of string length (1 to len//2)
+3. For each divisor, extract pattern and check if repeating it ≥2 times forms the string
+4. Return true on first match (early termination)
+
+**Complexity**: O(n²) per number where n = digit count (acceptable for AoC constraints)
+
+### Implementation
+
+1. **`is_invalid_id_part2(num: int) -> bool`**: Core pattern detection with divisor iteration
+2. **`check_range_part2(start: int, end: int) -> list[int]`**: Scan range using Part 2 rules
+3. **`solve_part2(input_text: str) -> int`**: Reuses `parse_ranges()` from Part 1, aggregates results
+
+### Test Results
+
+```
+23 tests total (8 Part 1 + 15 Part 2), 100% pass rate in 0.07 seconds
+✓ Part 1 backward compatibility maintained
+✓ Pattern detection (11, 111, 565656, 824824824 all invalid)
+✓ All 11 example ranges verified individually
+✓ Full example sum = 4174379265
+✓ Multi-range aggregation
+✓ Edge cases (empty input, ranges with no invalids)
+```
+
+### Key Insights
+
+- **Separate functions** preserved Part 1 backward compatibility
+- **Divisor-based approach** handles arbitrary repetition counts elegantly
+- **Early termination** optimizes performance (return on first pattern match)
+- **TDD workflow** caught edge cases: "222222" can be 2×6, 22×3, or 222×2 (any match makes it invalid)
 
 ## Usage
 
@@ -56,9 +98,13 @@ _Not yet attempted_
 # Run tests
 uv run pytest day-02/test_solution.py -v
 
-# Run solution
-python day-02/solution.py
+# Run Part 1
+uv run python day-02/solution.py --part 1
 # Output: Part 1: 9188031749
+
+# Run Part 2
+uv run python day-02/solution.py --part 2
+# Output: Part 2: 11323661261
 
 # Lint and format
 uv run ruff check day-02/
@@ -67,5 +113,9 @@ uv run ruff format day-02/
 
 ---
 
-**Specification**: `specs/007-day-02-part-1/`  
+**Specification**:
+
+- Part 1: `specs/007-day-02-part-1/`
+- Part 2: `specs/008-day-02-part-2/`
+
 **TDD Workflow**: RED-GREEN-REFACTOR cycle strictly followed
