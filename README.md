@@ -61,13 +61,13 @@ Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
 
 ## Progress Tracker
 
-| Day | Part 1 | Part 2 | Notes                                                                      |
-| --- | ------ | ------ | -------------------------------------------------------------------------- |
-| 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                       |
-| 02  | ✅     | ⬜     | Part 1: Invalid ID detection (string pattern matching). Answer: 9188031749 |
-| ... | ...    | ...    | ...                                                                        |
+| Day | Part 1 | Part 2 | Notes                                                                                                                                           |
+| --- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                                                                                            |
+| 02  | ✅     | ✅     | 14 % Tokens spent. Speckit/Copilot wanted to bruteforce, caught at research.md phase. Still, I wasn't able to steer to a "nice" solution fully. |
+| ... | ...    | ...    | ...                                                                                                                                             |
 
-Legend: ⬜ Not started | 🟨 In progress | ✅ Complete
+Legend: ⬜ Not started | ✅ Complete
 
 ## Commands
 
