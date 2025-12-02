@@ -61,11 +61,11 @@ Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
 
 ## Progress Tracker
 
-| Day | Part 1 | Part 2 | Notes |
-| --- | ------ | ------ | ----- |
-| 01  | ⬜     | ⬜     |       |
-| 02  | ⬜     | ⬜     |       |
-| ... | ...    | ...    | ...   |
+| Day | Part 1 | Part 2 | Notes                                                                      |
+| --- | ------ | ------ | -------------------------------------------------------------------------- |
+| 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                       |
+| 02  | ✅     | ⬜     | Part 1: Invalid ID detection (string pattern matching). Answer: 9188031749 |
+| ... | ...    | ...    | ...                                                                        |
 
 Legend: ⬜ Not started | 🟨 In progress | ✅ Complete
 
