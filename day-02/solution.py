@@ -216,7 +216,7 @@ def solve_part2(input_text: str) -> int:
 def main():
     """Main entry point."""
     import sys
-    
+
     input_file = Path(__file__).parent / "input.txt"
     input_text = input_file.read_text().strip()
 

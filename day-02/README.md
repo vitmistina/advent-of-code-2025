@@ -114,6 +114,7 @@ uv run ruff format day-02/
 ---
 
 **Specification**:
+
 - Part 1: `specs/007-day-02-part-1/`
 - Part 2: `specs/008-day-02-part-2/`
 
