@@ -5,6 +5,8 @@ Auto-generated from all feature plans. Last updated: 2025-11-28
 ## Active Technologies
 - HTML5, CSS3, JavaScript (ES6+) + None (vanilla JavaScript, no frameworks) (006-dial-visualization)
 - File-based input (reads from day-01/input.txt or test_input.txt) (006-dial-visualization)
+- Python 3.10+ + None (stdlib only, following AoC Constitution) (007-day-02-part-1)
+- File-based input (`day-02/input.txt`, `day-02/test_input.txt`) (007-day-02-part-1)
 
 - Python 3.10+ (per constitution) + `uv` (runner/deps), `pytest`, `ruff`, `python-dotenv`, `requests` (001-meta-cli)
 - Local filesystem only (day folders, specs) (001-meta-cli)
@@ -41,10 +43,10 @@ Python 3.10+ (per Constitution): Follow standard conventions
 - Example: `feat(day-01): implement part 2 similarity score calculation`
 
 ## Recent Changes
+- 007-day-02-part-1: Added Python 3.10+ + None (stdlib only, following AoC Constitution)
 - 006-dial-visualization: Added HTML5, CSS3, JavaScript (ES6+) + None (vanilla JavaScript, no frameworks)
 
 - 005-day-01-part-2: Added Python 3.10+ + Standard library only (pathlib for file I/O)
-- 004-day-01-part-1: Added Python 3.10+ + pytest (dev), no runtime dependencies beyond stdlib
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

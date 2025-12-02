@@ -27,10 +27,10 @@ Using Advent of Code day structure (from plan.md):
 
 **Purpose**: Create day-02 folder structure per AoC Constitution
 
-- [X] T001 Verify day-02/ folder exists with input.txt and description.md
-- [X] T002 Create test_input.txt from example in description.md with example ranges
-- [X] T003 [P] Create empty day-02/solution.py with module docstring
-- [X] T004 [P] Create empty day-02/test_solution.py with module docstring
+- [x] T001 Verify day-02/ folder exists with input.txt and description.md
+- [x] T002 Create test_input.txt from example in description.md with example ranges
+- [x] T003 [P] Create empty day-02/solution.py with module docstring
+- [x] T004 [P] Create empty day-02/test_solution.py with module docstring
 
 **Checkpoint**: Day 2 folder structure ready for TDD implementation
 
@@ -56,24 +56,24 @@ Using Advent of Code day structure (from plan.md):
 
 > **CRITICAL: Write these tests FIRST, run them to verify they FAIL before any implementation**
 
-- [X] T005 [P] [US1] Write test_is_invalid_id() in day-02/test_solution.py testing pattern detection (55→True, 101→False, 6464→True, 123123→True)
-- [X] T006 [P] [US1] Write test_is_invalid_id_edge_cases() in day-02/test_solution.py testing edge cases (11, 22, 99, 1010, single digits)
-- [X] T007 [P] [US1] Write test_find_invalid_ids_in_range() in day-02/test_solution.py testing range scanning with examples from spec
+- [x] T005 [P] [US1] Write test_is_invalid_id() in day-02/test_solution.py testing pattern detection (55→True, 101→False, 6464→True, 123123→True)
+- [x] T006 [P] [US1] Write test_is_invalid_id_edge_cases() in day-02/test_solution.py testing edge cases (11, 22, 99, 1010, single digits)
+- [x] T007 [P] [US1] Write test_find_invalid_ids_in_range() in day-02/test_solution.py testing range scanning with examples from spec
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py -v` - ALL tests should FAIL (ImportError or assertion failures)
 
 ### GREEN Phase - Implement Minimal Solution for User Story 1
 
-- [X] T008 [US1] Implement is_invalid_id(num: int) -> bool in day-02/solution.py using string split approach from research.md
-- [X] T009 [US1] Implement find_invalid_ids_in_range(start: int, end: int) -> list[int] in day-02/solution.py iterating through range
-- [X] T010 [US1] Add type hints and docstrings to both functions per contracts/api-contract.md
+- [x] T008 [US1] Implement is_invalid_id(num: int) -> bool in day-02/solution.py using string split approach from research.md
+- [x] T009 [US1] Implement find_invalid_ids_in_range(start: int, end: int) -> list[int] in day-02/solution.py iterating through range
+- [x] T010 [US1] Add type hints and docstrings to both functions per contracts/api-contract.md
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py -v` - Tests for US1 should now PASS
 
 ### REFACTOR Phase - Clean Up User Story 1
 
-- [X] T011 [US1] Review is_invalid_id() for clarity and add examples to docstring
-- [X] T012 [US1] Verify test coverage for US1 functions - all acceptance scenarios covered
+- [x] T011 [US1] Review is_invalid_id() for clarity and add examples to docstring
+- [x] T012 [US1] Verify test coverage for US1 functions - all acceptance scenarios covered
 
 **Checkpoint**: User Story 1 complete - can detect invalid IDs in a single range independently
 
@@ -87,22 +87,22 @@ Using Advent of Code day structure (from plan.md):
 
 ### RED Phase - Write Failing Tests for User Story 2 ⚠️
 
-- [X] T013 [P] [US2] Write test_parse_ranges() in day-02/test_solution.py testing comma-separated parsing ("11-22,95-115" → [(11,22), (95,115)])
-- [X] T014 [P] [US2] Write test_parse_ranges_edge_cases() in day-02/test_solution.py testing single range, whitespace handling, empty input
+- [x] T013 [P] [US2] Write test_parse_ranges() in day-02/test_solution.py testing comma-separated parsing ("11-22,95-115" → [(11,22), (95,115)])
+- [x] T014 [P] [US2] Write test_parse_ranges_edge_cases() in day-02/test_solution.py testing single range, whitespace handling, empty input
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py::test_parse_ranges* -v` - New tests should FAIL
 
 ### GREEN Phase - Implement User Story 2
 
-- [X] T015 [US2] Implement parse_ranges(input_text: str) -> list[tuple[int, int]] in day-02/solution.py per research.md approach
-- [X] T016 [US2] Add type hints and docstring to parse_ranges() per contracts/api-contract.md
+- [x] T015 [US2] Implement parse_ranges(input_text: str) -> list[tuple[int, int]] in day-02/solution.py per research.md approach
+- [x] T016 [US2] Add type hints and docstring to parse_ranges() per contracts/api-contract.md
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py -v` - All tests should PASS (US1 + US2)
 
 ### REFACTOR Phase - Clean Up User Story 2
 
-- [X] T017 [US2] Review parse_ranges() for edge case handling (empty strings, whitespace)
-- [X] T018 [US2] Verify integration: parse_ranges() output works with find_invalid_ids_in_range() from US1
+- [x] T017 [US2] Review parse_ranges() for edge case handling (empty strings, whitespace)
+- [x] T018 [US2] Verify integration: parse_ranges() output works with find_invalid_ids_in_range() from US1
 
 **Checkpoint**: User Stories 1 AND 2 both work - can parse multiple ranges and detect invalid IDs
 
@@ -116,25 +116,25 @@ Using Advent of Code day structure (from plan.md):
 
 ### RED Phase - Write Failing Tests for User Story 3 ⚠️
 
-- [X] T019 [US3] Write test_solve_part1_simple() in day-02/test_solution.py testing simple cases ("11-22" → 33)
-- [X] T020 [US3] Write test_solve_part1_example() in day-02/test_solution.py testing full example input → 1227775554
-- [X] T021 [P] [US3] Write test_solve_part1_edge_cases() in day-02/test_solution.py testing empty input, no invalid IDs
+- [x] T019 [US3] Write test_solve_part1_simple() in day-02/test_solution.py testing simple cases ("11-22" → 33)
+- [x] T020 [US3] Write test_solve_part1_example() in day-02/test_solution.py testing full example input → 1227775554
+- [x] T021 [P] [US3] Write test_solve_part1_edge_cases() in day-02/test_solution.py testing empty input, no invalid IDs
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py::test_solve_part1* -v` - New tests should FAIL
 
 ### GREEN Phase - Implement User Story 3
 
-- [X] T022 [US3] Implement solve_part1(input_text: str) -> int in day-02/solution.py integrating parse_ranges() + find_invalid_ids_in_range() + sum()
-- [X] T023 [US3] Add type hints and docstring to solve_part1() per contracts/api-contract.md
-- [X] T024 [US3] Implement main() function in day-02/solution.py reading from input.txt and printing Part 1 result
+- [x] T022 [US3] Implement solve_part1(input_text: str) -> int in day-02/solution.py integrating parse_ranges() + find_invalid_ids_in_range() + sum()
+- [x] T023 [US3] Add type hints and docstring to solve_part1() per contracts/api-contract.md
+- [x] T024 [US3] Implement main() function in day-02/solution.py reading from input.txt and printing Part 1 result
 
 **Checkpoint**: Run `uv run pytest day-02/test_solution.py -v` - ALL tests should PASS
 
 ### REFACTOR Phase - Clean Up User Story 3
 
-- [X] T025 [US3] Review solve_part1() for clarity - ensure integration is clean
-- [X] T026 [US3] Add pathlib import and verify main() uses Path(**file**).parent / "input.txt"
-- [X] T027 [US3] Verify full example test passes with exact sum 1227775554
+- [x] T025 [US3] Review solve_part1() for clarity - ensure integration is clean
+- [x] T026 [US3] Add pathlib import and verify main() uses Path(**file**).parent / "input.txt"
+- [x] T027 [US3] Verify full example test passes with exact sum 1227775554
 
 **Checkpoint**: All user stories complete - full Part 1 solution ready
 
@@ -144,11 +144,11 @@ Using Advent of Code day structure (from plan.md):
 
 **Purpose**: Final verification and quality checks
 
-- [X] T028 [P] Run full test suite: `uv run pytest day-02/test_solution.py -v` - verify 100% pass rate
-- [X] T029 [P] Run linter: `uv run ruff check day-02/` - verify no issues
-- [X] T030 [P] Run formatter: `uv run ruff format day-02/` - ensure PEP8 compliance
-- [X] T031 Execute solution: `uv run day-02/solution.py` - verify output format "Part 1: {answer}"
-- [X] T032 Verify all functions have docstrings with examples per Constitution Principle III
+- [x] T028 [P] Run full test suite: `uv run pytest day-02/test_solution.py -v` - verify 100% pass rate
+- [x] T029 [P] Run linter: `uv run ruff check day-02/` - verify no issues
+- [x] T030 [P] Run formatter: `uv run ruff format day-02/` - ensure PEP8 compliance
+- [x] T031 Execute solution: `uv run day-02/solution.py` - verify output format "Part 1: {answer}"
+- [x] T032 Verify all functions have docstrings with examples per Constitution Principle III
 - [ ] T033 [P] Create day-02/README.md documenting approach and any learnings (optional but recommended)
 - [ ] T034 Manual submission: Copy answer from terminal, submit to adventofcode.com/2025/day/2
 - [ ] T035 Update main README.md progress tracker with Day 2 Part 1 completion

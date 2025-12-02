@@ -15,6 +15,7 @@ See [description.md](description.md) for full problem statement.
 ### Approach
 
 **Algorithm**: String-based pattern matching
+
 - Convert number to string
 - Check if length is even (odd-length numbers cannot be split evenly)
 - Split in half and compare: if `first_half == second_half`, it's invalid
@@ -47,7 +48,7 @@ See [description.md](description.md) for full problem statement.
 
 ## Part 2
 
-*Not yet attempted*
+_Not yet attempted_
 
 ## Usage
 
