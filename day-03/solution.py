@@ -65,17 +65,78 @@ def solve_part1(input_text: str) -> int:
     return total
 
 
+def select_max_k_digits(bank: str, k: int = 12) -> str:
+    """
+    Select exactly k digits from bank to form the largest possible number.
+
+    Uses monotonic stack algorithm to select k digits in order that form
+    the maximum possible k-digit number. Algorithm runs in O(n) time.
+
+    The monotonic stack works by:
+    1. For each digit, pop smaller digits if we have room to refill stack
+    2. Push digit if stack has < k digits
+    3. Result: Stack contains largest k digits in order
+
+    Args:
+        bank (str): String of digit characters representing batteries.
+        k (int): Number of digits to select (default 12).
+
+    Returns:
+        str: String of k digits forming the maximum number.
+
+    Raises:
+        ValueError: If bank has fewer than k digits.
+    """
+    n = len(bank)
+    if n < k:
+        raise ValueError(f"Bank has {n} digits but need {k}")
+
+    stack = []
+    for i, digit in enumerate(bank):
+        # Pop smaller digits if we have enough remaining to fill stack to k
+        while stack and digit > stack[-1] and len(stack) + (n - i) > k:
+            stack.pop()
+        # Add digit if stack not full
+        if len(stack) < k:
+            stack.append(digit)
+
+    return "".join(stack)
+
+
+def solve_part2(input_text: str) -> int:
+    """
+    Solve Day 3 Part 2: Maximize joltage with 12 batteries per bank.
+
+    For each battery bank, selects exactly 12 digits (batteries) to form
+    the largest possible 12-digit number while preserving left-to-right order.
+    Sums the resulting numbers across all banks.
+
+    Uses monotonic stack algorithm for optimal O(n) performance per bank.
+
+    Args:
+        input_text (str): Multi-line string of battery banks.
+
+    Returns:
+        int: Total output joltage (sum of all maximum 12-digit numbers).
+    """
+    banks: list[str] = parse_input(input_text)
+    total: int = sum(int(select_max_k_digits(bank)) for bank in banks)
+    return total
+
+
 def main() -> None:
     """
     Entry point for running solution with input.txt.
 
     Reads the input file, computes the total output joltage,
-    and prints the result for Part 1.
+    and prints the result for Part 1 and Part 2.
     """
     input_file: Path = Path(__file__).parent / "input.txt"
     input_text: str = input_file.read_text()
-    result: int = solve_part1(input_text)
-    print(f"Part 1: {result}")
+    result1: int = solve_part1(input_text)
+    result2: int = solve_part2(input_text)
+    print(f"Part 1: {result1}")
+    print(f"Part 2: {result2}")
 
 
 if __name__ == "__main__":
