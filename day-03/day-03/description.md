@@ -9,20 +9,24 @@ You explain your need to get further underground. "Well, you could at least take
 "But, don't worry! It's not fried; it just needs power. Maybe you can get it running while I keep working on the elevators."
 
 There are batteries nearby that can supply emergency power to the escalator for just such an occasion. The batteries are each labeled with their [joltage](/2020/day/10) rating, a value from `1` to `9`. You make a note of their joltage ratings (your puzzle input). For example:
-
+    
+    
     987654321111111
     811111111111119
     234234234234278
     818181911112111
+    
 
 The batteries are arranged into _banks_ ; each line of digits in your input corresponds to a single bank of batteries. Within each bank, you need to turn on _exactly two_ batteries; the joltage that the bank produces is equal to the number formed by the digits on the batteries you've turned on. For example, if you have a bank like `12345` and you turn on batteries `2` and `4`, the bank would produce `24` jolts. (You cannot rearrange batteries.)
 
 You'll need to find the largest possible joltage each bank can produce. In the above example:
 
-- In `_98_ 7654321111111`, you can make the largest joltage possible, _`98`_ , by turning on the first two batteries.
-- In `_8_ 1111111111111 _9_`, you can make the largest joltage possible by turning on the batteries labeled `8` and `9`, producing _`89`_ jolts.
-- In `2342342342342 _78_`, you can make _`78`_ by turning on the last two batteries (marked `7` and `8`).
-- In `818181 _9_ 1111 _2_ 111`, the largest joltage you can produce is _`92`_.
+  * In `_98_ 7654321111111`, you can make the largest joltage possible, _`98`_ , by turning on the first two batteries.
+  * In `_8_ 1111111111111 _9_`, you can make the largest joltage possible by turning on the batteries labeled `8` and `9`, producing _`89`_ jolts.
+  * In `2342342342342 _78_`, you can make _`78`_ by turning on the last two batteries (marked `7` and `8`).
+  * In `818181 _9_ 1111 _2_ 111`, the largest joltage you can produce is _`92`_.
+
+
 
 The total output joltage is the sum of the maximum joltage from each bank, so in this example, the total output joltage is `98` \+ `89` \+ `78` \+ `92` = `_357_`.
 
@@ -37,18 +41,22 @@ Now, you need to make the largest joltage by turning on _exactly twelve_ batteri
 The joltage output for the bank is still the number formed by the digits of the batteries you've turned on; the only difference is that now there will be `_12_` digits in each bank's joltage output instead of two.
 
 Consider again the example from before:
-
+    
+    
     987654321111111
     811111111111119
     234234234234278
     818181911112111
+    
 
 Now, the joltages are much larger:
 
-- In `_987654321111_ 111`, the largest joltage can be found by turning on everything except some `1`s at the end to produce `_987654321111_`.
-- In the digit sequence `_81111111111_ 111 _9_`, the largest joltage can be found by turning on everything except some `1`s, producing `_811111111119_`.
-- In `23 _4_ 2 _34234234278_`, the largest joltage can be found by turning on everything except a `2` battery, a `3` battery, and another `2` battery near the start to produce `_434234234278_`.
-- In `_8_ 1 _8_ 1 _8_ 1 _911112111_`, the joltage `_888911112111_` is produced by turning on everything except some `1`s near the front.
+  * In `_987654321111_ 111`, the largest joltage can be found by turning on everything except some `1`s at the end to produce `_987654321111_`.
+  * In the digit sequence `_81111111111_ 111 _9_`, the largest joltage can be found by turning on everything except some `1`s, producing `_811111111119_`.
+  * In `23 _4_ 2 _34234234278_`, the largest joltage can be found by turning on everything except a `2` battery, a `3` battery, and another `2` battery near the start to produce `_434234234278_`.
+  * In `_8_ 1 _8_ 1 _8_ 1 _911112111_`, the joltage `_888911112111_` is produced by turning on everything except some `1`s near the front.
+
+
 
 The total output joltage is now much larger: `987654321111` \+ `811111111119` \+ `434234234278` \+ `888911112111` = `_3121910778619_`.
 

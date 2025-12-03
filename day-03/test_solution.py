@@ -1,10 +1,18 @@
 # Import functions (will fail until implemented)
 try:
-    from solution import max_joltage, parse_input, solve_part1
+    from solution import (
+        max_joltage,
+        parse_input,
+        select_max_k_digits,
+        solve_part1,
+        solve_part2,
+    )
 except ImportError:
     max_joltage = None
     parse_input = None
+    select_max_k_digits = None
     solve_part1 = None
+    solve_part2 = None
 
 
 # T005 [P] [US1] test_max_joltage()
@@ -49,3 +57,46 @@ def test_solve_part1():
     input_text = """987654321111111\n811111111111119\n234234234234278\n818181911112111"""
     result = solve_part1(input_text)
     assert result == 357  # 98 + 89 + 78 + 92
+
+
+# --- Part 2 Tests ---
+
+
+def test_select_max_k_digits():
+    """Test monotonic stack algorithm for selecting k digits."""
+    # Example from spec
+    assert select_max_k_digits("987654321111111", 12) == "987654321111"
+    assert select_max_k_digits("811111111111119", 12) == "811111111119"
+    assert select_max_k_digits("234234234234278", 12) == "434234234278"
+    assert select_max_k_digits("818181911112111", 12) == "888911112111"
+
+
+def test_select_max_k_digits_edge_cases():
+    """Test edge cases for monotonic stack."""
+    # All identical digits
+    assert select_max_k_digits("555555555555", 12) == "555555555555"
+    # Ascending order
+    assert select_max_k_digits("123456789012", 12) == "123456789012"
+    # Descending order
+    assert select_max_k_digits("987654321098", 12) == "987654321098"
+    # Mixed
+    assert select_max_k_digits("9876543210987654", 12) == "987654987654"
+
+
+def test_select_max_k_digits_error():
+    """Test error handling for banks with <k digits."""
+    import pytest
+
+    with pytest.raises(ValueError):
+        select_max_k_digits("12345", 12)
+
+
+def test_solve_part2():
+    """Test full example from Part 2 spec."""
+    input_text = """987654321111111
+811111111111119
+234234234234278
+818181911112111"""
+    result = solve_part2(input_text)
+    # 987654321111 + 811111111119 + 434234234278 + 888911112111 = 3121910778619
+    assert result == 3121910778619
