@@ -1,0 +1,3 @@
+# TODO: Add example input from puzzle description
+# This file should contain the sample input provided in the puzzle.
+# Update this once you read the puzzle!
