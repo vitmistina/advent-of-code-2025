@@ -13,6 +13,9 @@ Auto-generated from all feature plans. Last updated: 2025-11-28
 - Files (input.txt, test_input.txt) (009-day-03-part-1)
 - Python 3.10+ + pytest, ruff (linting/formatting), uv (package management) (011-day-04-part-1)
 - File-based (`day-04/input.txt`, `day-04/test_input.txt`) (011-day-04-part-1)
+- Python 3.10+ + pytest (already in project) (001-day-04-part-2)
+- File-based (input.txt, test_input.txt) (001-day-04-part-2)
+- Python 3.10+ + uv, ruff, pytest (for tests) (001-day-04-part-2)
 
 - Python 3.10+ (per constitution) + `uv` (runner/deps), `pytest`, `ruff`, `python-dotenv`, `requests` (001-meta-cli)
 - Local filesystem only (day folders, specs) (001-meta-cli)
@@ -49,9 +52,9 @@ Python 3.10+ (per Constitution): Follow standard conventions
 - Example: `feat(day-01): implement part 2 similarity score calculation`
 
 ## Recent Changes
+- 001-day-04-part-2: Added Python 3.10+ + uv, ruff, pytest (for tests)
+- 001-day-04-part-2: Added Python 3.10+ + pytest (already in project)
 - 011-day-04-part-1: Added Python 3.10+ + pytest, ruff (linting/formatting), uv (package management)
-- 009-day-03-part-1: Added Python 3.10+ + None (stdlib only, pytest for testing)
-- 009-day-03-part-1: Added [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
 
 <!-- MANUAL ADDITIONS START -->
