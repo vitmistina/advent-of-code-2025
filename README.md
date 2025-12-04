@@ -1,3 +1,11 @@
+# Progress
+
+#
+
+| Day | Part 1 | Part 2 | Notes                   |
+| --- | ------ | ------ | ----------------------- |
+| 4   | ✅     | ⬜     | Grid adjacency counting |
+
 # Advent of Code 2025
 
 Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
@@ -61,11 +69,13 @@ Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
 
 ## Progress Tracker
 
-| Day | Part 1 | Part 2 | Notes                                                                                                                                           |
-| --- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                                                                                            |
-| 02  | ✅     | ✅     | 14 % Tokens spent. Speckit/Copilot wanted to bruteforce, caught at research.md phase. Still, I wasn't able to steer to a "nice" solution fully. |
-| ... | ...    | ...    | ...                                                                                                                                             |
+| Day | Part 1 | Part 2 | Notes                                                                                                                                             |
+| --- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                                                                                              |
+| 02  | ✅     | ✅     | 14 % Tokens spent. Speckit/Copilot wanted to bruteforce, caught at research.md phase. Still, I wasn't able to steer to a "nice" solution fully.   |
+| 03  | ✅     | ✅     | 16 % Tokens spent. Another "lazy" attempt at bruteforce. Based on a vague description, the robot aligned description with "monotonic stack" algo. |
+| 03  | ✅     | ⬜     | X % Tokens spent. Spent 5 minutes debugging, because I've written wrong answer to the AoC UI 😅                                                   |
+| ... | ...    | ...    | ...                                                                                                                                               |
 
 Legend: ⬜ Not started | ✅ Complete
 
