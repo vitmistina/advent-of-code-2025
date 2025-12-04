@@ -1,7 +1,13 @@
 """Tests for Day 4 Part 1: Accessible Paper Rolls Counter."""
 
-
-from solution import count_adjacent_rolls, is_accessible, is_valid_position, parse_grid, solve_part1
+from solution import (
+    count_adjacent_rolls,
+    is_accessible,
+    is_valid_position,
+    parse_grid,
+    solve_part1,
+    solve_part2,
+)
 
 
 def test_is_accessible_threshold():
@@ -38,8 +44,8 @@ def test_all_accessible_grid():
     assert all(accessible)
 
 
-def test_example_grid():
-    """Test with provided example expecting 13 accessible rolls."""
+def test_example_grid_part1():
+    """Test with provided example expecting 13 accessible rolls (Part 1)."""
     input_data = """..@@.@@@@.
 @@@.@.@.@@
 @@@@@.@.@@
@@ -52,6 +58,22 @@ def test_example_grid():
 @.@.@@@.@."""
     result = solve_part1(input_data)
     assert result == 13, f"Expected 13 accessible rolls, got {result}"
+
+
+def test_example_grid_part2():
+    """Test with provided example expecting 43 total removed rolls (Part 2)."""
+    input_data = """..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@."""
+    result = solve_part2(input_data)
+    assert result == 43, f"Expected 43 removed rolls, got {result}"
 
 
 def test_parse_grid_basic():

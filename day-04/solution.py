@@ -138,9 +138,69 @@ def solve_part1(input_data: str) -> int:
     return accessible_count
 
 
+# --- Part 2: Iterative Removal Algorithm ---
+from typing import Dict, Set, Tuple
+
+
+def build_rolltracker_and_buckets(
+    grid: list[str],
+) -> Tuple[Dict[Tuple[int, int], int], Dict[int, Set[Tuple[int, int]]]]:
+    """
+    Build rolltracker (pos -> neighbor count) and bucketed sets (count -> set of positions).
+    Returns (rolltracker, buckets)
+    """
+    rolltracker: Dict[Tuple[int, int], int] = {}
+    buckets: Dict[int, Set[Tuple[int, int]]] = {i: set() for i in range(9)}
+    for row, row_str in enumerate(grid):
+        for col, val in enumerate(row_str):
+            if val == "@":
+                count = count_adjacent_rolls(grid, row, col)
+                rolltracker[(row, col)] = count
+                buckets[count].add((row, col))
+    return rolltracker, buckets
+
+
+def solve_part2(input_data: str) -> int:
+    """
+    Solve Day 4 Part 2: Iteratively remove accessible rolls and count total removed.
+    Returns total removed rolls.
+    """
+    grid = parse_grid(input_data)
+    if not grid:
+        return 0
+    rolltracker, buckets = build_rolltracker_and_buckets(grid)
+    total_removed = 0
+    while buckets[0] or buckets[1] or buckets[2] or buckets[3]:
+        accessible = buckets[0] | buckets[1] | buckets[2] | buckets[3]
+        # Remove accessible rolls
+        for pos in accessible:
+            # Remove from correct bucket
+            for count in range(4):
+                if pos in buckets[count]:
+                    buckets[count].remove(pos)
+                    break
+            if pos in rolltracker:
+                del rolltracker[pos]
+            # Update neighbors
+            row, col = pos
+            for dr, dc in DIRECTIONS:
+                neighbor = (row + dr, col + dc)
+                for old_count in range(1, 9):
+                    if neighbor in buckets[old_count]:
+                        buckets[old_count].remove(neighbor)
+                        buckets[old_count - 1].add(neighbor)
+                        if neighbor in rolltracker:
+                            rolltracker[neighbor] -= 1
+                        break
+        total_removed += len(accessible)
+    return total_removed
+
+
 if __name__ == "__main__":
-    # Read input and solve
+    # Read input and solve both parts
     with open("day-04/input.txt") as f:
         input_data = f.read()
-    result = solve_part1(input_data)
-    print(f"Part 1: {result}")
+    part1_result = solve_part1(input_data)
+    part2_result = solve_part2(input_data)
+    print(f"Part 1: {part1_result}")
+    print(f"Part 2: {part2_result}")

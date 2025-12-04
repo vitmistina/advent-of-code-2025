@@ -11,8 +11,7 @@ If you can optimize the work the forklifts are doing, maybe they would have time
 The rolls of paper (`@`) are arranged on a large grid; the Elves even have a helpful diagram (your puzzle input) indicating where everything is located.
 
 For example:
-    
-    
+
     ..@@.@@@@.
     @@@.@.@.@@
     @@@@@.@.@@
@@ -23,13 +22,11 @@ For example:
     @.@@@.@@@@
     .@@@@@@@@.
     @.@.@@@.@.
-    
 
 The forklifts can only access a roll of paper if there are _fewer than four rolls of paper_ in the eight adjacent positions. If you can figure out which rolls of paper the forklifts can access, they'll spend less time looking and more time breaking down the wall to the cafeteria.
 
 In this example, there are `_13_` rolls of paper that can be accessed by a forklift (marked with `x`):
-    
-    
+
     ..xx.xx@x.
     x@@.@.@.@@
     @@@@@.x.@@
@@ -40,6 +37,137 @@ In this example, there are `_13_` rolls of paper that can be accessed by a forkl
     x.@@@.@@@@
     .@@@@@@@@.
     x.x.@@@.x.
-    
 
 Consider your complete diagram of the paper roll locations. _How many rolls of paper can be accessed by a forklift?_
+
+## \--- Part Two ---
+
+Now, the Elves just need help accessing as much of the paper as they can.
+
+Once a roll of paper can be accessed by a forklift, it can be _removed_. Once a roll of paper is removed, the forklifts might be able to access _more_ rolls of paper, which they might also be able to remove. How many total rolls of paper could the Elves remove if they keep repeating this process?
+
+Starting with the same example as above, here is one way you could remove as many rolls of paper as possible, using highlighted `_@_` to indicate that a roll of paper is about to be removed, and using `x` to indicate that a roll of paper was just removed:
+
+    Initial state:
+    .._@__@_._@__@_ @_@_.
+    _@_ @@.@.@.@@
+    @@@@@._@_.@@
+    @.@@@@..@.
+    _@_ @.@@@@.@_@_
+    .@@@@@@@.@
+    .@.@.@.@@@
+    _@_.@@@.@@@@
+    .@@@@@@@@.
+    _@_._@_.@@@._@_.
+
+    Remove 13 rolls of paper:
+    ..xx.xx _@_ x.
+    x@@._@_._@_.@_@_
+    _@_ @@@@.x.@@
+    _@_.@@@@.._@_.
+    x@.@@@@._@_ x
+    ._@_ @@@@@@._@_
+    ._@_.@.@.@@@
+    x.@@@.@@@@
+    ._@_ @@@@@@@.
+    x.x.@@@.x.
+
+    Remove 12 rolls of paper:
+    .......x..
+    ._@_ @.x.x._@_ x
+    x@@@@..._@__@_
+    x.@@@@..x.
+    ._@_.@@@@.x.
+    .x@@@@@@.x
+    .x.@.@.@@_@_
+    ..@@@.@@@@
+    .x _@_ @@@@@@.
+    ....@@@...
+
+    Remove 7 rolls of paper:
+    ..........
+    .x _@_.....x.
+    ._@_ @@@...xx
+    ..@@@@....
+    .x.@@@@...
+    .._@_ @@@@@..
+    ...@.@.@@x
+    .._@_ @@.@@@_@_
+    ..x@@@@@@.
+    ....@@@...
+
+    Remove 5 rolls of paper:
+    ..........
+    ..x.......
+    .x _@_ @@.....
+    ..@@@@....
+    ...@@@@...
+    ..x@@@@@..
+    ...@.@.@@.
+    ..x@@.@@@x
+    ...@@@@@_@_.
+    ....@@@...
+
+    Remove 2 rolls of paper:
+    ..........
+    ..........
+    ..x@@.....
+    .._@_ @@@....
+    ...@@@@...
+    ...@@@@@..
+    ...@.@.@@.
+    ...@@.@@@.
+    ...@@@@@x.
+    ....@@@...
+
+    Remove 1 roll of paper:
+    ..........
+    ..........
+    ..._@_ @.....
+    ..x@@@....
+    ...@@@@...
+    ...@@@@@..
+    ...@.@.@@.
+    ...@@.@@@.
+    ...@@@@@..
+    ....@@@...
+
+    Remove 1 roll of paper:
+    ..........
+    ..........
+    ...x _@_.....
+    ...@@@....
+    ...@@@@...
+    ...@@@@@..
+    ...@.@.@@.
+    ...@@.@@@.
+    ...@@@@@..
+    ....@@@...
+
+    Remove 1 roll of paper:
+    ..........
+    ..........
+    ....x.....
+    ..._@_ @@....
+    ...@@@@...
+    ...@@@@@..
+    ...@.@.@@.
+    ...@@.@@@.
+    ...@@@@@..
+    ....@@@...
+
+    Remove 1 roll of paper:
+    ..........
+    ..........
+    ..........
+    ...x@@....
+    ...@@@@...
+    ...@@@@@..
+    ...@.@.@@.
+    ...@@.@@@.
+    ...@@@@@..
+    ....@@@...
+
+Stop once no more rolls of paper are accessible by a forklift. In this example, a total of `_43_` rolls of paper can be removed.
+
+Start with your original diagram. _How many rolls of paper in total can be removed by the Elves and their forklifts?_
