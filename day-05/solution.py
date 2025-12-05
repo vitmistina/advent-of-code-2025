@@ -41,12 +41,12 @@ def parse_database(data: str) -> tuple[list[FreshRange], list[int]]:
     """
     if not isinstance(data, str):
         raise ValueError("Input data must be a string.")
-    
+
     # Split on blank line if it exists
     parts = data.strip().split("\n\n", 1)
     header = parts[0]
     ids_section = parts[1] if len(parts) > 1 else ""
-    
+
     ranges = []
     for line in header.strip().splitlines():
         if not line.strip():
@@ -146,11 +146,11 @@ def parse_ranges_part2(data: str) -> list[FreshRange]:
     """
     if not isinstance(data, str):
         raise ValueError("Input data must be a string.")
-    
+
     # Split on blank line if it exists, otherwise use entire input as ranges
     parts = data.strip().split("\n\n", 1)
     header = parts[0]
-    
+
     ranges = []
     for line in header.strip().splitlines():
         if not line.strip():
