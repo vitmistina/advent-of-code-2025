@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: Day 5 Part 2 - Fresh Range API
+  version: 1.0.0
+paths:
+  /fresh-range/count:
+    post:
+      summary: Calculate total unique fresh ingredient IDs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ranges:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      start:
+                        type: integer
+                      end:
+                        type: integer
+                    required:
+                      - start
+                      - end
+      responses:
+        '200':
+          description: Total count of unique fresh IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
