@@ -74,7 +74,8 @@ Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
 | 01  | ✅     | ✅     | 10 % Tokens spent. Spec drift looks to be a concern.                                                                                                          |
 | 02  | ✅     | ✅     | 14 % Tokens spent. Speckit/Copilot wanted to bruteforce, caught at research.md phase. Still, I wasn't able to steer to a "nice" solution fully.               |
 | 03  | ✅     | ✅     | 16 % Tokens spent. Another "lazy" attempt at bruteforce. Based on a vague description, the robot aligned description with "monotonic stack" algo.             |
-| 03  | ✅     | ✅     | 19 % Tokens spent. Spent 5 minutes debugging, because I've written wrong answer to the AoC UI 😅. Part 2, I've told it what to do in the Plan/Research phase. |
+| 04  | ✅     | ✅     | 19 % Tokens spent. Spent 5 minutes debugging, because I've written wrong answer to the AoC UI 😅. Part 2, I've told it what to do in the Plan/Research phase. |
+| 05  | ✅     | ✅     | 21 % Tokens spent. I love the fact I can tell ideas to the robot (set theory, set merging/union) and it does the low level stuff                              |
 | ... | ...    | ...    | ...                                                                                                                                                           |
 
 Legend: ⬜ Not started | ✅ Complete
