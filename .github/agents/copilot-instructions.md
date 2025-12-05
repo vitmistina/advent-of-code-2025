@@ -16,6 +16,8 @@ Auto-generated from all feature plans. Last updated: 2025-11-28
 - Python 3.10+ + pytest (already in project) (001-day-04-part-2)
 - File-based (input.txt, test_input.txt) (001-day-04-part-2)
 - Python 3.10+ + uv, ruff, pytest (for tests) (001-day-04-part-2)
+- Python 3.10+ (uv-managed virtual environment) + Standard library (pathlib, typing), pytest for local tests, uv tooling; no third-party runtime deps needed (012-day-05-part-1)
+- Local filesystem inputs (`day-05/input.txt`, `day-05/test_input.txt`) (012-day-05-part-1)
 
 - Python 3.10+ (per constitution) + `uv` (runner/deps), `pytest`, `ruff`, `python-dotenv`, `requests` (001-meta-cli)
 - Local filesystem only (day folders, specs) (001-meta-cli)
@@ -52,9 +54,9 @@ Python 3.10+ (per Constitution): Follow standard conventions
 - Example: `feat(day-01): implement part 2 similarity score calculation`
 
 ## Recent Changes
+- 012-day-05-part-1: Added Python 3.10+ (uv-managed virtual environment) + Standard library (pathlib, typing), pytest for local tests, uv tooling; no third-party runtime deps needed
 - 001-day-04-part-2: Added Python 3.10+ + uv, ruff, pytest (for tests)
 - 001-day-04-part-2: Added Python 3.10+ + pytest (already in project)
-- 011-day-04-part-1: Added Python 3.10+ + pytest, ruff (linting/formatting), uv (package management)
 
 
 <!-- MANUAL ADDITIONS START -->

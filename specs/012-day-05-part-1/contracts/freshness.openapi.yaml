@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: Fresh Ingredient Identification API
+  version: 0.1.0
+  description: >-
+    Contract mirroring Day 5 Part 1 workflows. External callers supply fresh ID ranges and
+    available ingredient IDs to compute freshness decisions and aggregated counts.
+servers:
+  - url: https://aoc.local/api
+paths:
+  /ingredients/freshness/check:
+    post:
+      summary: Determine freshness for a single ingredient ID
+      operationId: checkFreshness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FreshnessCheckRequest'
+      responses:
+        '200':
+          description: Freshness decision produced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreshnessCheckResponse'
+  /ingredients/freshness/count:
+    post:
+      summary: Count how many available ingredient IDs are fresh
+      operationId: countFreshIngredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FreshnessCountRequest'
+      responses:
+        '200':
+          description: Aggregate counts with optional debug payloads
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreshnessCountResponse'
+  /ingredients/database/parse:
+    post:
+      summary: Parse database format into structured payloads
+      operationId: parseDatabase
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Raw database text block (ranges, blank line, IDs)
+      responses:
+        '200':
+          description: Structured ranges and ingredient IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParsedDatabase'
+components:
+  schemas:
+    Range:
+      type: object
+      required: [start, end]
+      properties:
+        start:
+          type: integer
+          minimum: 0
+        end:
+          type: integer
+          minimum: 0
+          description: Inclusive end of the range (must be >= start)
+    FreshnessCheckRequest:
+      type: object
+      required: [ranges, ingredientId]
+      properties:
+        ranges:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Range'
+        ingredientId:
+          type: integer
+          minimum: 0
+    FreshnessCheckResponse:
+      type: object
+      required: [ingredientId, status]
+      properties:
+        ingredientId:
+          type: integer
+        status:
+          type: string
+          enum: [fresh, spoiled]
+        matchedRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Range'
+    FreshnessCountRequest:
+      type: object
+      required: [ranges, ingredientIds]
+      properties:
+        ranges:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Range'
+        ingredientIds:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+    FreshnessCountResponse:
+      type: object
+      required: [total, freshCount, spoiledCount]
+      properties:
+        total:
+          type: integer
+        freshCount:
+          type: integer
+        spoiledCount:
+          type: integer
+        freshIds:
+          type: array
+          items:
+            type: integer
+        spoiledIds:
+          type: array
+          items:
+            type: integer
+    ParsedDatabase:
+      type: object
+      required: [ranges, ingredientIds]
+      properties:
+        ranges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Range'
+        ingredientIds:
+          type: array
+          items:
+            type: integer
