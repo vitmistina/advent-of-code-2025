@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Tuple
 
 
 @dataclass
@@ -12,10 +11,11 @@ class FreshRange:
             raise ValueError(f"Invalid FreshRange: start ({self.start}) > end ({self.end})")
 
 
-def merge_ranges(ranges: List[FreshRange]) -> List[Tuple[int, int]]:
+def merge_ranges(ranges: list[FreshRange]) -> list[tuple[int, int]]:
     """
-    Merge overlapping and adjacent FreshRange intervals into a sorted, disjoint list of (start, end) tuples.
-    Runs in O(R log R) time where R is the number of ranges.
+    Merge overlapping and adjacent FreshRange intervals into sorted, disjoint
+    list of (start, end) tuples. Runs in O(R log R) time where R is the number
+    of ranges.
     """
     if not ranges:
         return []
@@ -41,10 +41,12 @@ def parse_database(data: str) -> tuple[list[FreshRange], list[int]]:
     """
     if not isinstance(data, str):
         raise ValueError("Input data must be a string.")
-    try:
-        header, ids = data.strip().split("\n\n", 1)
-    except ValueError:
-        raise ValueError("Malformed input: missing blank line separating ranges and IDs.")
+
+    # Split on blank line if it exists
+    parts = data.strip().split("\n\n", 1)
+    header = parts[0]
+    ids_section = parts[1] if len(parts) > 1 else ""
+
     ranges = []
     for line in header.strip().splitlines():
         if not line.strip():
@@ -52,20 +54,20 @@ def parse_database(data: str) -> tuple[list[FreshRange], list[int]]:
         try:
             start, end = map(int, line.strip().split("-"))
             ranges.append(FreshRange(start, end))
-        except Exception:
-            raise ValueError(f"Malformed range line: '{line}'")
+        except ValueError as e:
+            raise ValueError(f"Malformed range line: '{line}'") from e
     ids_list = []
-    for line in ids.strip().splitlines():
+    for line in ids_section.strip().splitlines():
         if not line.strip():
             continue
         try:
             ids_list.append(int(line.strip()))
-        except Exception:
-            raise ValueError(f"Malformed ingredient ID line: '{line}'")
+        except ValueError as e:
+            raise ValueError(f"Malformed ingredient ID line: '{line}'") from e
     return ranges, ids_list
 
 
-def is_fresh(ingredient_id: int, merged_ranges: List[Tuple[int, int]]) -> bool:
+def is_fresh(ingredient_id: int, merged_ranges: list[tuple[int, int]]) -> bool:
     """
     Determine if an ingredient ID is fresh by checking if it falls within any merged range.
     Uses binary search for O(log R) lookup where R is the number of merged ranges.
@@ -128,6 +130,68 @@ def solve_part1(data: str) -> int:
     return count
 
 
+def parse_ranges_part2(data: str) -> list[FreshRange]:
+    """
+    Parse only the fresh ID ranges from the input, ignoring available IDs section.
+    For Part 2, we only care about ranges (before the blank line).
+
+    Args:
+        data: The database string containing fresh ranges and available IDs
+
+    Returns:
+        A list of FreshRange objects
+
+    Raises:
+        ValueError: If ranges section is malformed
+    """
+    if not isinstance(data, str):
+        raise ValueError("Input data must be a string.")
+
+    # Split on blank line if it exists, otherwise use entire input as ranges
+    parts = data.strip().split("\n\n", 1)
+    header = parts[0]
+
+    ranges = []
+    for line in header.strip().splitlines():
+        if not line.strip():
+            continue
+        try:
+            start, end = map(int, line.strip().split("-"))
+            ranges.append(FreshRange(start, end))
+        except ValueError as e:
+            raise ValueError(f"Malformed range line: '{line}'") from e
+    return ranges
+
+
+def solve_part2(data: str) -> int:
+    """
+    Solve Day 5 Part 2: Count all unique ingredient IDs that are fresh.
+
+    Calculates the total count of unique fresh IDs across all merged ranges.
+    The available IDs section is completely ignored.
+
+    Time complexity: O(R log R) where R is the number of ranges.
+
+    Args:
+        data: The database string containing fresh ranges and available IDs
+
+    Returns:
+        The count of all unique fresh ingredient IDs across all ranges
+    """
+    # Parse only ranges (ignore available IDs)
+    ranges = parse_ranges_part2(data)
+
+    # Merge overlapping ranges into disjoint intervals
+    merged = merge_ranges(ranges)
+
+    # Sum the count of IDs in each merged range
+    total_count = 0
+    for start, end in merged:
+        total_count += end - start + 1
+
+    return total_count
+
+
 if __name__ == "__main__":
     import argparse
     from pathlib import Path
@@ -142,7 +206,7 @@ if __name__ == "__main__":
     input_file = day_dir / ("test_input.txt" if args.test else "input.txt")
 
     # Load input
-    with open(input_file, "r") as f:
+    with open(input_file) as f:
         data = f.read()
 
     # Solve
@@ -150,4 +214,5 @@ if __name__ == "__main__":
         result = solve_part1(data)
         print(f"Part 1: {result}")
     else:
-        print("Part 2 not yet implemented")
+        result = solve_part2(data)
+        print(f"Part 2: {result}")

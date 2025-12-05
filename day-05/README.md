@@ -65,10 +65,69 @@ uv run pytest day-05/test_solution.py -v
 **Fresh IDs:** `5, 11, 17`  
 **Result:** `3`
 
+## Part 2: Count All Fresh Ingredients
+
+### Problem Summary
+
+Determine the **total count of all unique ingredient IDs that are fresh** across all fresh ranges, completely ignoring the available IDs section.
+
+### Approach
+
+The solution reuses the efficient interval merging from Part 1:
+
+1. **Parse**: Extract only fresh ranges (ignore available IDs section) - O(R)
+2. **Merge**: Combine overlapping/adjacent ranges into disjoint intervals - O(R log R)
+3. **Sum**: Add up all IDs within each merged range - O(R)
+
+**Time Complexity**: O(R log R) where R = number of ranges (no binary search needed)
+
+### Key Components
+
+- `parse_ranges_part2()`: Extracts only ranges section, ignores available IDs
+- `solve_part2()`: Merges ranges and sums all IDs within merged intervals
+
+### Usage
+
+```bash
+# Run with test input
+uv run day-05/solution.py --test --part 2
+
+# Run with real input
+uv run day-05/solution.py --part 2
+
+# Run tests
+uv run pytest day-05/test_solution.py -v -k "part2"
+```
+
+### Example
+
+**Input:**
+
+```
+3-5
+10-14
+16-20
+12-18
+
+1
+5
+8
+11
+17
+32
+```
+
+**Merged Ranges:** `[(3, 5), (10, 20)]`  
+**All Fresh IDs:** `3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20`  
+**Result:** `14`
+
+### Key Difference from Part 1
+
+- **Part 1**: Checks if specific IDs from the available list are fresh
+- **Part 2**: Counts ALL fresh IDs across entire ranges, ignores the available list
+
 ### Development
 
-This solution follows Test-Driven Development (TDD):
-
-- All tests written before implementation
-- Comprehensive coverage for parsing, merging, and validation
-- Verified against both test and real inputs
+- Comprehensive tests covering 7 acceptance scenarios + 4 edge cases
+- All tests pass with TDD workflow
+- PEP8 compliant code via ruff linting
