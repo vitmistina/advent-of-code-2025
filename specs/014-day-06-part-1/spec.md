@@ -5,11 +5,11 @@
 **Status**: Draft  
 **Input**: User description: "Help me create user stories and spec for Day 6, Part 1. I want to be able to create such solution, which can accept an arbitarily long stream of problems. Assume the grand total still will fit into an int."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Parse Single Vertical Math Problem (Priority: P1)
 
-A user needs to parse a single math problem that is presented vertically in a text format where numbers are stacked vertically and an operation symbol (+, *) appears at the bottom.
+A user needs to parse a single math problem that is presented vertically in a text format where numbers are stacked vertically and an operation symbol (+, \*) appears at the bottom.
 
 **Why this priority**: This is the foundational capability - without being able to parse individual problems, nothing else works. This is the core MVP.
 
@@ -18,7 +18,7 @@ A user needs to parse a single math problem that is presented vertically in a te
 **Acceptance Scenarios**:
 
 1. **Given** a worksheet with a single problem containing two numbers (5 and 3) and a + operation, **When** parsed and solved, **Then** the result is 8
-2. **Given** a worksheet with a single problem containing three numbers (2, 4, 3) and a * operation, **When** parsed and solved, **Then** the result is 24
+2. **Given** a worksheet with a single problem containing three numbers (2, 4, 3) and a \* operation, **When** parsed and solved, **Then** the result is 24
 3. **Given** a worksheet with numbers of varying column widths, **When** parsed, **Then** numbers are correctly identified regardless of alignment
 
 ---
@@ -63,14 +63,14 @@ A user needs to sum all individual problem results to produce a single grand tot
 - How should the system respond to malformed input (e.g., missing operation symbols)?
 - What happens if a column appears to be all spaces - is it definitely a separator?
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
 - **FR-001**: System MUST parse problems from a vertically-formatted text worksheet where numbers are arranged in columns and operation symbols appear at the bottom
 - **FR-002**: System MUST identify problem boundaries by detecting full columns of whitespace separating adjacent problems
 - **FR-003**: System MUST correctly extract numeric operands from vertical columns, handling variable-width numbers
-- **FR-004**: System MUST identify the operation symbol (+ or *) for each problem
+- **FR-004**: System MUST identify the operation symbol (+ or \*) for each problem
 - **FR-005**: System MUST evaluate each problem by applying the specified operation sequentially to all operands (left to right)
 - **FR-006**: System MUST handle an arbitrarily long stream of problems without memory constraints beyond the final result
 - **FR-007**: System MUST calculate and return the grand total as the sum of all individual problem results
@@ -78,12 +78,12 @@ A user needs to sum all individual problem results to produce a single grand tot
 
 ### Key Entities
 
-- **Problem**: A collection of numeric operands and a single operation symbol (+ or *), arranged vertically on the worksheet
+- **Problem**: A collection of numeric operands and a single operation symbol (+ or \*), arranged vertically on the worksheet
 - **Operand**: A positive integer value appearing in a vertical column
-- **Operation**: A single symbol, either + (addition) or * (multiplication), indicating the computation to perform
+- **Operation**: A single symbol, either + (addition) or \* (multiplication), indicating the computation to perform
 - **Worksheet**: The complete input containing one or more problems separated by full columns of whitespace
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
@@ -98,6 +98,6 @@ A user needs to sum all individual problem results to produce a single grand tot
 - Numbers in the input are positive integers
 - Each problem contains at least one number and exactly one operation symbol
 - The grand total will fit within a 32-bit signed integer
-- Operation symbols will only be + or *
+- Operation symbols will only be + or \*
 - Whitespace separating problems consists of complete columns of only space characters or newlines
 - Left/right alignment within a problem's column is not significant (as stated in problem description)
