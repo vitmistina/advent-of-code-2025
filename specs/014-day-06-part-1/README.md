@@ -12,18 +12,18 @@ Complete specification and implementation plan for Day 6, Part 1 of Advent of Co
 
 ### 📋 Specification Documents
 
-| Document | Purpose |
-|----------|---------|
-| **[spec.md](spec.md)** | Feature specification with user stories, requirements, and success criteria |
-| **[plan.md](plan.md)** | Detailed implementation plan with architecture decisions and phasing |
-| **[data-model.md](data-model.md)** | Entity definitions, relationships, and state transitions |
-| **[contracts/api.md](contracts/api.md)** | Public API contracts and function signatures |
-| **[quickstart.md](quickstart.md)** | Quick reference for implementation overview and key steps |
+| Document                                 | Purpose                                                                     |
+| ---------------------------------------- | --------------------------------------------------------------------------- |
+| **[spec.md](spec.md)**                   | Feature specification with user stories, requirements, and success criteria |
+| **[plan.md](plan.md)**                   | Detailed implementation plan with architecture decisions and phasing        |
+| **[data-model.md](data-model.md)**       | Entity definitions, relationships, and state transitions                    |
+| **[contracts/api.md](contracts/api.md)** | Public API contracts and function signatures                                |
+| **[quickstart.md](quickstart.md)**       | Quick reference for implementation overview and key steps                   |
 
 ### ✅ Quality Artifacts
 
-| Document | Purpose |
-|----------|---------|
+| Document                                                     | Purpose                                   |
+| ------------------------------------------------------------ | ----------------------------------------- |
 | **[checklists/requirements.md](checklists/requirements.md)** | Specification quality assurance checklist |
 
 ## Feature Summary
@@ -33,14 +33,16 @@ Complete specification and implementation plan for Day 6, Part 1 of Advent of Co
 ### Example
 
 Input:
+
 ```
-123 328  51 64 
- 45 64  387 23 
+123 328  51 64
+ 45 64  387 23
   6 98  215 314
-*   +   *   +  
+*   +   *   +
 ```
 
 Problems:
+
 - 123 × 45 × 6 = 33,210
 - 328 + 64 + 98 = 490
 - 51 × 387 × 215 = 4,243,455
@@ -65,7 +67,7 @@ Each stage is lazy-evaluated, so memory usage is constant regardless of workshee
 ✅ **Constant memory** relative to worksheet width  
 ✅ **Generator pipeline** with lazy evaluation  
 ✅ **Incremental processing** of problems  
-✅ **No full worksheet buffering**  
+✅ **No full worksheet buffering**
 
 ### 🎯 Key Design Decisions
 
@@ -77,11 +79,13 @@ Each stage is lazy-evaluated, so memory usage is constant regardless of workshee
 ## Implementation Roadmap
 
 ### Phase 1: Parser Module (`day-06/parser.py`)
+
 - [x] Architecture designed
 - [x] Contracts defined
 - [ ] Implementation (ready to code)
 
 **Functions to implement**:
+
 - `read_lines_as_stream()` - Line-by-line generator
 - `Column` class - Vertical column representation
 - `columns_from_lines()` - Lines → Columns generator
@@ -89,16 +93,19 @@ Each stage is lazy-evaluated, so memory usage is constant regardless of workshee
 - `extract_problem()` - Parse problem from column group
 
 ### Phase 2: Solution Module (`day-06/solution.py`)
+
 - [x] Architecture designed
 - [x] Contracts defined
 - [ ] Implementation (ready to code)
 
 **Functions to implement**:
+
 - `Problem` class - Parsed problem representation
 - `evaluate_problem()` - Compute problem result
 - `solve_worksheet()` - Main orchestrator
 
 ### Phase 3: Testing (`day-06/test_solution.py`)
+
 - [x] Test strategy defined
 - [ ] Tests to implement (ready to code)
 

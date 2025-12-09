@@ -6,23 +6,26 @@
 ## Feature Overview
 
 Parse a vertically-formatted math worksheet where:
+
 - **Numbers** are arranged in vertical columns
-- **Operations** (+ or *) appear in the bottom row
+- **Operations** (+ or \*) appear in the bottom row
 - **Problems** are separated by full columns of whitespace
 - **Goal**: Calculate the sum of all problem results (grand total)
 
 Example:
+
 ```
-123 328  51 64 
- 45 64  387 23 
+123 328  51 64
+ 45 64  387 23
   6 98  215 314
-*   +   *   +  
+*   +   *   +
 ```
 
 Four problems:
-- 123 * 45 * 6 = 33210
+
+- 123 _ 45 _ 6 = 33210
 - 328 + 64 + 98 = 490
-- 51 * 387 * 215 = 4243455
+- 51 _ 387 _ 215 = 4243455
 - 64 + 23 + 314 = 401
 
 **Grand Total**: 33210 + 490 + 4243455 + 401 = **4277556**
@@ -45,7 +48,7 @@ Instead of loading the entire worksheet, we process it as a **stream**:
 ✅ Constant memory regardless of worksheet width  
 ✅ Generator-based pipeline (lazy evaluation)  
 ✅ Problems processed incrementally  
-✅ Grand total computed as we go  
+✅ Grand total computed as we go
 
 ### Generator Usage
 
@@ -69,30 +72,33 @@ Each stage is a generator, so we never hold the full worksheet in memory.
 ### Phase 1: Parser Module (`day-06/parser.py`)
 
 **Step 1**: Define Column class
+
 ```python
 @dataclass
 class Column:
     index: int
     values: List[str]
-    
+
     @property
     def is_separator(self) -> bool:
         return all(v.isspace() or v == '' for v in self.values)
 ```
 
 **Step 2**: Implement line-to-column transformation
+
 ```python
 def columns_from_lines(lines: Iterator[str]) -> Iterator[Column]:
     # Buffer all lines, then yield columns left-to-right
     buffer = list(lines)
     max_width = max(len(line) for line in buffer) if buffer else 0
-    
+
     for col_idx in range(max_width):
         values = [line[col_idx] if col_idx < len(line) else ' ' for line in buffer]
         yield Column(index=col_idx, values=values)
 ```
 
 **Step 3**: Implement column grouping
+
 ```python
 def problem_column_groups(columns: Iterator[Column]) -> Iterator[ProblemGroup]:
     group = []
@@ -108,17 +114,18 @@ def problem_column_groups(columns: Iterator[Column]) -> Iterator[ProblemGroup]:
 ```
 
 **Step 4**: Implement problem extraction
+
 ```python
 def extract_problem(group: ProblemGroup) -> Problem:
     # Last row contains operation
     operation_row = group.columns[-1].values[-1]  # Wait, this is wrong...
-    
+
     # Actually: reconstruct last row from all columns in group
     last_row = ''.join(col.values[-1] for col in group.columns)
-    
+
     # Find operation symbol
     operation = '+' if '+' in last_row else '*'
-    
+
     # Extract numbers from columns (skip operation row)
     operands = []
     for col in group.columns:
@@ -127,7 +134,7 @@ def extract_problem(group: ProblemGroup) -> Problem:
         number_str = ''.join(c for c in number_str if c.isdigit())
         if number_str:
             operands.append(int(number_str))
-    
+
     return Problem(operands=operands, operation=operation, result=None)
 ```
 
@@ -136,13 +143,14 @@ def extract_problem(group: ProblemGroup) -> Problem:
 ### Phase 2: Solution Module (`day-06/solution.py`)
 
 **Step 1**: Define Problem class
+
 ```python
 @dataclass
 class Problem:
     operands: List[int]
     operation: str
     result: Optional[int] = None
-    
+
     def __post_init__(self):
         if self.operation not in ('+', '*'):
             raise ValueError(f"Invalid operation: {self.operation}")
@@ -151,6 +159,7 @@ class Problem:
 ```
 
 **Step 2**: Implement problem evaluation
+
 ```python
 def evaluate_problem(problem: Problem) -> int:
     result = problem.operands[0]
@@ -163,12 +172,13 @@ def evaluate_problem(problem: Problem) -> int:
 ```
 
 **Step 3**: Implement main solver
+
 ```python
 def solve_worksheet(source: Union[str, Path, IO], verbose=False) -> int:
     lines = read_lines_as_stream(source)
     cols = columns_from_lines(lines)
     groups = problem_column_groups(cols)
-    
+
     grand_total = 0
     count = 0
     for group in groups:
@@ -178,7 +188,7 @@ def solve_worksheet(source: Union[str, Path, IO], verbose=False) -> int:
         count += 1
         if verbose:
             print(f"Problem {count}: {problem.operands} {problem.operation} = {result}")
-    
+
     return grand_total
 ```
 
@@ -187,6 +197,7 @@ def solve_worksheet(source: Union[str, Path, IO], verbose=False) -> int:
 ### Phase 3: Testing (`day-06/test_solution.py`)
 
 **Test the parser**:
+
 ```python
 def test_extract_columns_simple():
     lines = ['abc', 'def']
@@ -210,6 +221,7 @@ def test_problem_grouping():
 ```
 
 **Test problem evaluation**:
+
 ```python
 def test_evaluate_addition():
     p = Problem(operands=[2, 3, 4], operation='+')
@@ -233,6 +245,7 @@ def test_example_worksheet():
 ### 1. Line Buffer Requirement
 
 We must buffer all lines to identify separator columns. This is necessary because:
+
 - Can't distinguish "space in column" from "missing value" without full height
 - Need consistent column height for all problems
 
@@ -241,6 +254,7 @@ We must buffer all lines to identify separator columns. This is necessary becaus
 ### 2. Column-at-a-time Processing
 
 Process columns left-to-right without holding entire width:
+
 - Supports arbitrarily long worksheets
 - Natural fit for line-based input
 - Aligns with "stream processing" requirement
@@ -248,6 +262,7 @@ Process columns left-to-right without holding entire width:
 ### 3. Problem Evaluation Pipeline
 
 Use generators to chain transformations:
+
 - Each stage is independent and testable
 - Memory footprint is constant
 - Easy to add logging/debugging between stages
@@ -257,19 +272,22 @@ Use generators to chain transformations:
 ## Expected Behavior
 
 ### Input: Example Worksheet
+
 ```
-123 328  51 64 
- 45 64  387 23 
+123 328  51 64
+ 45 64  387 23
   6 98  215 314
-*   +   *   +  
+*   +   *   +
 ```
 
 ### Output
+
 ```
 Grand Total: 4277556
 ```
 
 ### With Verbose Flag
+
 ```
 Problem 1: [123, 45, 6] * = 33210
 Problem 2: [328, 64, 98] + = 490
@@ -282,12 +300,12 @@ Grand Total: 4277556
 
 ## Files to Create/Modify
 
-| File | Purpose |
-|------|---------|
-| `day-06/parser.py` | Column and problem parsing (generators) |
-| `day-06/solution.py` | Problem evaluation and main solver |
-| `day-06/test_solution.py` | Comprehensive test suite |
-| `day-06/solution_original.py` | (if exists) - keep for reference |
+| File                          | Purpose                                 |
+| ----------------------------- | --------------------------------------- |
+| `day-06/parser.py`            | Column and problem parsing (generators) |
+| `day-06/solution.py`          | Problem evaluation and main solver      |
+| `day-06/test_solution.py`     | Comprehensive test suite                |
+| `day-06/solution_original.py` | (if exists) - keep for reference        |
 
 ---
 

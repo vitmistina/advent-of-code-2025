@@ -13,6 +13,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
 ### 📚 Specification Documents
 
 1. **[spec.md](spec.md)** (156 lines)
+
    - 3 prioritized user stories (all P1 priority)
    - 8 functional requirements
    - 5 measurable success criteria
@@ -20,6 +21,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
    - Edge cases identified
 
 2. **[plan.md](plan.md)** (396 lines)
+
    - Technical context and problem analysis
    - Architecture decision: Stream-based processing
    - Detailed module design (parser.py, solution.py)
@@ -28,6 +30,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
    - Trade-offs and design rationale
 
 3. **[data-model.md](data-model.md)** (349 lines)
+
    - Column, ProblemGroup, Problem, Worksheet entities
    - Detailed data flow through pipeline
    - State transitions and validation rules
@@ -35,6 +38,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
    - Walkthrough example of all steps
 
 4. **[contracts/api.md](contracts/api.md)** (312 lines)
+
    - 6 public functions with full signatures and contracts
    - 2 classes with detailed specifications
    - Memory efficiency analysis for each function
@@ -43,6 +47,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
    - Integration example
 
 5. **[quickstart.md](quickstart.md)** (307 lines)
+
    - Architecture highlights and overview
    - Stream-based design explanation
    - Memory efficiency benefits
@@ -61,6 +66,7 @@ A comprehensive specification and implementation plan for the Day 6, Part 1 solu
 ### ✅ Quality Artifacts
 
 7. **[checklists/requirements.md](checklists/requirements.md)**
+
    - Specification quality verification
    - All items passed ✅
 
@@ -81,6 +87,7 @@ Lines → Columns → Problem Groups → Problems → Grand Total
 ```
 
 Each stage is **lazy-evaluated**, ensuring:
+
 - ✅ Constant memory relative to worksheet **width**
 - ✅ Support for arbitrarily long lines
 - ✅ Natural separation of concerns
@@ -89,11 +96,13 @@ Each stage is **lazy-evaluated**, ensuring:
 ### 💾 Memory Efficiency
 
 **Trade-off**: Line buffering is necessary
+
 - Must load all lines to identify column separators
 - This is a reasonable trade-off since lines are short
 - Memory cost: O(total_lines × average_line_length)
 
 **Benefit**: Column streaming is unlimited
+
 - Process left-to-right without width constraint
 - Problems processed one at a time
 - Grand total accumulated incrementally
@@ -101,6 +110,7 @@ Each stage is **lazy-evaluated**, ensuring:
 ### 🎯 Generator Pattern
 
 Using Python generators throughout:
+
 - **read_lines_as_stream()** - Lines (O(1) per line)
 - **columns_from_lines()** - Columns (O(1) per column)
 - **problem_column_groups()** - Problem groups (O(problem_width) buffered)
@@ -123,6 +133,7 @@ The specification and plan are complete and detailed enough to start implementat
 ### Phased Implementation
 
 **Phase 1**: Parser Module (5 functions)
+
 - `read_lines_as_stream()`
 - `Column` class
 - `columns_from_lines()`
@@ -130,11 +141,13 @@ The specification and plan are complete and detailed enough to start implementat
 - `extract_problem()`
 
 **Phase 2**: Solution Module (3 functions)
+
 - `Problem` class
 - `evaluate_problem()`
 - `solve_worksheet()` (orchestrator)
 
 **Phase 3**: Testing (15+ test cases)
+
 - Unit tests for parser
 - Unit tests for solution
 - Integration tests
@@ -144,37 +157,40 @@ The specification and plan are complete and detailed enough to start implementat
 
 All specification requirements translate to testable criteria:
 
-| Criterion | How Verified |
-|-----------|--------------|
-| Parses vertical columns correctly | Unit test: `test_extract_columns_simple()` |
-| Identifies separators | Unit test: `test_separator_column()` |
-| Extracts operands accurately | Unit test: `test_extract_problem()` |
-| Evaluates operations left-to-right | Unit test: `test_evaluate_addition/multiplication()` |
-| Solves example worksheet | Integration test: `test_example_worksheet_returns_4277556()` |
-| Handles arbitrary widths | Test with wide worksheets |
-| Memory efficiency | Profile with large inputs |
-| Code quality | Type hints, docstrings, tests |
+| Criterion                          | How Verified                                                 |
+| ---------------------------------- | ------------------------------------------------------------ |
+| Parses vertical columns correctly  | Unit test: `test_extract_columns_simple()`                   |
+| Identifies separators              | Unit test: `test_separator_column()`                         |
+| Extracts operands accurately       | Unit test: `test_extract_problem()`                          |
+| Evaluates operations left-to-right | Unit test: `test_evaluate_addition/multiplication()`         |
+| Solves example worksheet           | Integration test: `test_example_worksheet_returns_4277556()` |
+| Handles arbitrary widths           | Test with wide worksheets                                    |
+| Memory efficiency                  | Profile with large inputs                                    |
+| Code quality                       | Type hints, docstrings, tests                                |
 
 ## Feature Summary
 
 **Problem Statement**:  
 Parse a vertically-formatted math worksheet where:
+
 - Numbers are arranged in vertical columns
-- Operations (+, *) appear at the bottom
+- Operations (+, \*) appear at the bottom
 - Problems are separated by whitespace columns
 - Calculate the sum of all problem results
 
 **Example Input**:
+
 ```
-123 328  51 64 
- 45 64  387 23 
+123 328  51 64
+ 45 64  387 23
   6 98  215 314
-*   +   *   +  
+*   +   *   +
 ```
 
 **Expected Output**: `4277556`
 
 **Problems in example**:
+
 - 123 × 45 × 6 = 33,210
 - 328 + 64 + 98 = 490
 - 51 × 387 × 215 = 4,243,455
@@ -186,21 +202,25 @@ Parse a vertically-formatted math worksheet where:
 To proceed with implementation:
 
 1. Start with **Phase 1: Parser Module**
+
    - Review [plan.md](plan.md) Phase 1 section
    - Reference [contracts/api.md](contracts/api.md) for signatures
    - Check [data-model.md](data-model.md) for entity definitions
 
 2. Create `day-06/parser.py`
+
    - Implement Column class
    - Implement generators in order (dependencies flow left-to-right)
    - Test each function incrementally
 
 3. Create `day-06/solution.py`
+
    - Implement Problem class
    - Implement evaluate_problem()
    - Implement solve_worksheet()
 
 4. Create `day-06/test_solution.py`
+
    - Reference test cases in [plan.md](plan.md)
    - Run against test_input.txt and input.txt
 
@@ -240,7 +260,7 @@ specs/014-day-06-part-1/
 
 **Total Lines**: ~2000 lines of specification and design  
 **Total Documentation**: 8 comprehensive documents  
-**Git Commits**: 4 commits tracking creation  
+**Git Commits**: 4 commits tracking creation
 
 ## Conclusion
 

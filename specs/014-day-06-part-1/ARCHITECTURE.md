@@ -204,7 +204,7 @@
   ▲
   │    Input buffering phase
   │    (buffering all lines)
-  │    
+  │
 M │    ┌────────────┐
 e │    │            │
 m │    │   PEAK     │ (height = #lines × avg_line_length)
@@ -287,31 +287,32 @@ Step 4: Extract Problems
 
 def solve_worksheet(source):
     """Process entire worksheet as a pipeline of generators."""
-    
+
     lines = read_lines_as_stream(source)
     #  Generator: yields Line objects
-    
+
     columns = columns_from_lines(lines)
     #  Generator: yields Column objects
-    
+
     groups = problem_column_groups(columns)
     #  Generator: yields ProblemGroup objects
-    
+
     grand_total = 0
     for group in groups:
         problem = extract_problem(group)
         #  Parses this group into a Problem object
-        
+
         result = evaluate_problem(problem)
         #  Computes result left-to-right
-        
+
         grand_total += result
         #  Accumulate
-    
+
     return grand_total
 ```
 
 **Memory analysis**:
+
 1. `lines` - Generator (O(1) per line)
 2. `columns` - Generator (O(1) per column)
 3. `groups` - Generator (O(width) for current problem group)

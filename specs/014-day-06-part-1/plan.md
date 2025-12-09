@@ -9,6 +9,7 @@
 ### Problem Analysis
 
 The input is a vertically-formatted math worksheet where:
+
 - **Layout**: Numbers are arranged in vertical columns; operation symbols appear at the bottom row
 - **Problem Separation**: Problems are separated by full columns containing only whitespace
 - **Format**: Line-based input with potentially very long lines (arbitrarily long stream)
@@ -19,6 +20,7 @@ The input is a vertically-formatted math worksheet where:
 Instead of parsing the entire worksheet into memory, we'll process it as a stream of **column groups**, where each group represents a single problem.
 
 **Key Insight**: We can read the input line-by-line, track column positions as we process, and identify column boundaries that contain only whitespace (problem separators). This way:
+
 - Memory usage is constant regardless of worksheet width
 - We process one problem at a time
 - Grand total accumulates as problems are solved
@@ -33,12 +35,12 @@ Problem:
   - operands: List[int]          # Numbers extracted from vertical columns
   - operation: str               # '+' or '*'
   - result: int                  # Cached computation result
-  
+
 Column:
   - index: int                   # Position in the worksheet (0-based)
   - values: List[str]            # Non-whitespace character at each row
   - is_separator: bool           # True if all values are whitespace
-  
+
 Problem Group:
   - start_column: int            # First column of this problem
   - end_column: int              # Last column of this problem
@@ -54,12 +56,14 @@ Responsible for parsing the worksheet and extracting problems.
 **Key Functions**:
 
 #### `read_lines_as_stream(file_or_stream)`
+
 - **Purpose**: Generator that yields lines from input without loading entire file
 - **Input**: File object or iterable of lines
 - **Yields**: Individual lines (including newlines)
 - **Memory**: O(1) - only one line buffered at a time
 
 #### `columns_from_lines(lines_generator)`
+
 - **Purpose**: Transform line stream into column stream
 - **Input**: Generator of lines
 - **Yields**: Column objects containing values at each row
@@ -74,6 +78,7 @@ Responsible for parsing the worksheet and extracting problems.
 **Note**: Step 1 is a necessary tradeoff; we can't determine problem boundaries without knowing the full height. However, this is constant memory per worksheet (lines are typically short relative to width).
 
 #### `problem_column_groups(columns_generator)`
+
 - **Purpose**: Group columns into problems based on separator columns (all whitespace)
 - **Input**: Generator of Column objects
 - **Yields**: Problem groups (sequences of columns before separator)
@@ -87,11 +92,12 @@ Responsible for parsing the worksheet and extracting problems.
 - **Memory**: O(max_problem_width) - only columns in current problem buffered
 
 #### `extract_problem(column_group)`
+
 - **Purpose**: Parse a problem group into operands and operation symbol
 - **Input**: Sequence of Column objects for one problem
 - **Returns**: Problem object with operands list and operation symbol
 - **Algorithm**:
-  1. Last row contains operation symbol(s) - identify +, *, or spaces
+  1. Last row contains operation symbol(s) - identify +, \*, or spaces
   2. Split operation row by spaces to identify which columns have operations
   3. For each non-operation column, extract vertical number:
      - Read digits from top to bottom in that column
@@ -100,14 +106,15 @@ Responsible for parsing the worksheet and extracting problems.
 - **Memory**: O(max_problem_width)
 
 #### `evaluate_problem(problem)`
+
 - **Purpose**: Compute result for a single problem
 - **Input**: Problem object
 - **Returns**: Integer result
 - **Algorithm**:
   1. Start with first operand as accumulator
-  2. Apply operation (+ or *) sequentially from left to right:
+  2. Apply operation (+ or \*) sequentially from left to right:
      - `result = result + operand` (for +)
-     - `result = result * operand` (for *)
+     - `result = result * operand` (for \*)
   3. Return final result
 - **Memory**: O(1) - only tracking accumulator
 
@@ -118,6 +125,7 @@ Main orchestration combining parsing and computation.
 **Key Functions**:
 
 #### `solve_worksheet(input_stream, verbose=False)`
+
 - **Purpose**: Parse entire worksheet and compute grand total
 - **Input**: File object, file path, or iterable of lines
 - **Returns**: Integer grand total
@@ -144,11 +152,13 @@ Main orchestration combining parsing and computation.
 **Decision**: Buffer all lines before processing columns
 
 **Rationale**:
+
 - Cannot identify problem boundaries (separator columns) without knowing worksheet height
 - Need full height to distinguish "space in column X" from "missing value"
 - Lines are typically much shorter than worksheet width, so this is acceptable
 
 **Impact**:
+
 - Memory: O(total_lines × average_line_width) for input
 - Trade-off: Necessary for correctness in identifying column separators
 
@@ -157,11 +167,13 @@ Main orchestration combining parsing and computation.
 **Decision**: Stream columns rather than pre-parsing the entire grid
 
 **Rationale**:
+
 - Supports arbitrarily long horizontal streams (width has no limit)
 - Only one column processed at a time (except during problem extraction)
 - Aligns with user requirement: "open each line as a stream and process each stream"
 
 **Impact**:
+
 - Memory: Constant for streaming phase
 - Simplicity: Natural separation between column identification and problem parsing
 
@@ -170,12 +182,14 @@ Main orchestration combining parsing and computation.
 **Decision**: Use Python generators to chain processing stages
 
 **Rationale**:
+
 - Natural fit for streaming architecture
 - Allows lazy evaluation - only process what's needed
 - Memory-efficient chaining of transformations
 - Clear separation of concerns between parsing stages
 
 **Impact**:
+
 - Code is declarative and easy to test
 - Each stage is independently testable
 
@@ -184,11 +198,13 @@ Main orchestration combining parsing and computation.
 **Decision**: Process problems left-to-right, accumulating grand total as we go
 
 **Rationale**:
+
 - Aligns with column-at-a-time processing
 - Grand total is computed incrementally, not stored
 - Only final result is retained in memory
 
 **Impact**:
+
 - Memory: O(1) for grand total accumulation
 - Supports verification: can report partial results if needed
 
@@ -197,21 +213,25 @@ Main orchestration combining parsing and computation.
 ### Phase 1: Parser Module
 
 **Step 1.1**: Implement `read_lines_as_stream()`
+
 - Simple line-by-line generator
 - Handle file paths, file objects, and iterables
 - Test with sample inputs
 
 **Step 1.2**: Implement `Column` class and `columns_from_lines()`
+
 - Define Column dataclass with index, values, is_separator property
 - Compute is_separator based on all values being whitespace
 - Test column extraction with example worksheet
 
 **Step 1.3**: Implement `problem_column_groups()`
+
 - Accumulate columns until separator found
 - Yield groups as sequences
 - Test with multi-problem worksheets
 
 **Step 1.4**: Implement `extract_problem()`
+
 - Parse operation row
 - Extract numbers from columns
 - Return Problem dataclass
@@ -220,15 +240,18 @@ Main orchestration combining parsing and computation.
 ### Phase 2: Solution Module
 
 **Step 2.1**: Implement `Problem` class
+
 - Dataclass with operands and operation
 - Validation of operation symbol
 
 **Step 2.2**: Implement `evaluate_problem()`
+
 - Sequential left-to-right evaluation
-- Support + and * operations
+- Support + and \* operations
 - Test with known problem results (e.g., 123*45*6=33210)
 
 **Step 2.3**: Implement `solve_worksheet()`
+
 - Orchestrate entire pipeline
 - Accumulate grand total
 - Test with example worksheet (expected: 4277556)
@@ -236,20 +259,24 @@ Main orchestration combining parsing and computation.
 ### Phase 3: Testing
 
 **Step 3.1**: Unit tests for parser module
+
 - Test column identification
 - Test separator detection
 - Test problem extraction with edge cases
 
 **Step 3.2**: Unit tests for solution module
+
 - Test problem evaluation
 - Test grand total accumulation
 
 **Step 3.3**: Integration tests
+
 - Test with example worksheet from problem description
 - Test with multi-problem scenarios
 - Test with edge cases (single problem, many problems)
 
 **Step 3.4**: Performance tests
+
 - Verify memory efficiency with large worksheets
 - Benchmark against naive approach (if needed)
 
@@ -307,6 +334,7 @@ test_large_arbitrary_width_worksheet()
 ## Success Criteria
 
 ✅ **Functional**:
+
 - Correctly parses vertically-formatted problems
 - Identifies problem boundaries via separator columns
 - Evaluates problems with correct operation
@@ -314,12 +342,14 @@ test_large_arbitrary_width_worksheet()
 - Handles example: 33210 + 490 + 4243455 + 401 = 4277556
 
 ✅ **Non-Functional**:
+
 - Memory usage is constant regardless of worksheet width
 - All processing uses generators to avoid buffering
 - Handles arbitrarily long horizontal streams
 - Performance is acceptable (linear in total input size)
 
 ✅ **Code Quality**:
+
 - Clear separation of parsing and evaluation concerns
 - Comprehensive unit tests
 - Type hints throughout
