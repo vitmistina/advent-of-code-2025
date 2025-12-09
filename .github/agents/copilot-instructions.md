@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2025-11-28
 
 ## Active Technologies
+
 - HTML5, CSS3, JavaScript (ES6+) + None (vanilla JavaScript, no frameworks) (006-dial-visualization)
 - File-based input (reads from day-01/input.txt or test_input.txt) (006-dial-visualization)
 - Python 3.10+ + None (stdlib only, following AoC Constitution) (007-day-02-part-1)
@@ -55,10 +56,13 @@ Python 3.10+ (per Constitution): Follow standard conventions
 - Example: `feat(day-01): implement part 2 similarity score calculation`
 
 ## Recent Changes
+
 - 013-day-05-part-2: Added [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 - 013-day-05-part-2: Added Python 3.10+ + Built-in (dataclasses, typing)
 - 012-day-05-part-1: Added Python 3.10+ (uv-managed virtual environment) + Standard library (pathlib, typing), pytest for local tests, uv tooling; no third-party runtime deps needed
 
-
 <!-- MANUAL ADDITIONS START -->
+
+User USES POWERSHELL! Do not suggest bash commands.
+
 <!-- MANUAL ADDITIONS END -->
