@@ -23,10 +23,10 @@ Operation = str
 class Problem:
     """
     A parsed math problem with operands, operation, and result.
-    
+
     Used by both Part 1 and Part 2 solutions. The data model is generic
     and works for both left-to-right and right-to-left column reading.
-    
+
     Attributes:
         operands: List of integer operands
         operation: Operation symbol ('+' or '*')

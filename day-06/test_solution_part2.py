@@ -50,15 +50,15 @@ class TestSolveWorksheet:
 
     def test_single_problem_addition(self):
         """Test solving a single addition problem.
-        
+
         In Part 2, numbers are in columns (top-to-bottom) and columns are read right-to-left.
         For a simple two-number addition:
           3 1
           4 2
             +
-        
+
         Col 1 (right): 3, 4 → 34
-        Col 0 (left): 1, 2 → 12  
+        Col 0 (left): 1, 2 → 12
         Reading right-to-left: 34 + 12 = 46
         """
         worksheet = "31\n42\n+\n"
@@ -70,12 +70,12 @@ class TestSolveWorksheet:
 
     def test_single_problem_multiplication(self):
         """Test solving a single multiplication problem.
-        
+
         In Part 2:
           5
           3
           *
-          
+
         Col 0: 5, 3 → 53
         Numbers (right-to-left): 53
         Operation: *
@@ -88,16 +88,14 @@ class TestSolveWorksheet:
         # Expected: 53 = 53
         assert result == 53
 
-
-
     def test_acceptance_criteria_example(self):
         """Test the example from the spec (acceptance criteria).
-        
+
         The worksheet is parsed right-to-left:
         columns 0-2: problem 1 (rightmost problem)
         column 3: separator
         columns 4-6: problem 2 (left problem)
-        
+
         For each problem, read columns top-to-bottom to get digit rows,
         then reconstruct numbers from digit columns.
         """
@@ -129,14 +127,12 @@ class TestSolveWorksheet:
 
     def test_empty_worksheet(self):
         """Test empty worksheet doesn't raise error (returns 0).
-        
+
         Empty input should result in no problems and grand total 0.
         """
         worksheet = ""
         result = solve_worksheet(io.StringIO(worksheet))
         assert result == 0
-
-
 
     def test_file_input(self, tmp_path):
         """Test solving from a file."""
@@ -146,25 +142,23 @@ class TestSolveWorksheet:
         assert result == 46
 
 
-
-
 class TestEdgeCases:
     """Tests for edge cases and error handling."""
 
     def test_large_numbers(self):
         """Test with large numbers.
-        
+
         Format:
           999
           888
           777
           *
-        
+
         Col 0: 9, 8, 7 → 987
         Col 1: 9, 8, 7 → 987
         Col 2: 9, 8, 7 → 987
         Operation: *
-        
+
         Problem (rightmost to leftmost): 987, 987, 987
         Result: 987 * 987 * 987 = 960596643
         """
@@ -174,12 +168,12 @@ class TestEdgeCases:
 
     def test_zero_in_operands(self):
         """Test with zero in operands.
-        
+
         Format:
           5
           0
           *
-        
+
         Numbers: 50
         Operation: *
         Expected: 50 = 50
@@ -202,15 +196,15 @@ class TestEdgeCases:
 
     def test_three_problems(self):
         """Test with three separate problems.
-        
+
         Format:
           1 2 3
           * + *
-        
+
         Problem 1 (rightmost): 3, op *  → 3
         Problem 2 (middle): 2, op +  → 2
         Problem 3 (leftmost): 1, op *  → 1
-        
+
         Grand Total: 3 + 2 + 1 = 6
         """
         worksheet = "1 2 3\n* + *\n"
