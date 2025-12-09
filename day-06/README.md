@@ -1,10 +1,22 @@
-# Day 6, Part 1 - Vertical Math Worksheet Parser
+# Day 6, Part 1 & Part 2 - Cephalopod Math Worksheet Parser
 
 ## Overview
 
-Solve vertically-formatted math worksheets where numbers are arranged in vertical columns, operations appear in the bottom row, and problems are separated by whitespace columns.
+Two complementary solutions for cephalopod math worksheets:
 
-## Running the Solution
+### Part 1: Vertical Math (Left-to-Right Columns)
+
+Numbers are arranged in vertical columns. Reading columns left-to-right gives operands.
+
+### Part 2: Right-to-Left Columns
+
+Same format, but columns are processed right-to-left. Each digit position is its own column.
+
+Both parts share the same `Problem` dataclass and `evaluate_problem` logic in `utils.py`.
+
+## Part 1: Vertical Math Worksheet Parser
+
+### Running the Solution
 
 ### With Main Input
 

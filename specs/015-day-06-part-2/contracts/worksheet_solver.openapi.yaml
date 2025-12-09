@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: Cephalopod Worksheet Solver API
+  version: 1.0.0
+paths:
+  /solve:
+    post:
+      summary: Solve a cephalopod math worksheet (right-to-left columns)
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: |
+                123 328  51 64
+                 45 64  387 23
+                  6 98  215 314
+                *   +   *   +
+      responses:
+        '200':
+          description: Grand total of all problems
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grand_total:
+                    type: integer
+                    example: 3263827
+                  problems:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        operands:
+                          type: array
+                          items:
+                            type: integer
+                        operation:
+                          type: string
+                          enum: ['+', '*']
+                        result:
+                          type: integer
