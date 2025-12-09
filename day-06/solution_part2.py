@@ -1,29 +1,37 @@
 """
-Solution module for Day 6, Part 1 - Vertical Math Worksheet Parser.
-Implements problem evaluation and worksheet solving logic per spec.
+Solution module for Day 6, Part 2 - Cephalopod Math (Right-to-Left Columns).
+Implements problem evaluation and worksheet solving logic for right-to-left columns.
 
 This module provides:
-- solve_worksheet: Main entry point to solve an entire worksheet
+- solve_worksheet: Main entry point to solve an entire worksheet (Part 2 specific)
+
+The solve_worksheet function reuses the data model (Problem) and evaluation logic
+(evaluate_problem) from utils.py, with only the parsing/grouping logic specific to Part 2.
 
 The solve_worksheet function provides a complete streaming pipeline that
 processes worksheets of arbitrary size without loading them entirely into memory.
 
-The Problem dataclass and evaluate_problem logic are shared with Part 2 in utils.py.
+Key differences from Part 1:
+- Numbers are reconstructed by reading columns right-to-left
+- Columns are grouped right-to-left
+- Each number is extracted top-to-bottom from a column (most significant digit at top)
 
 Example:
-    >>> import solution
+    >>> import solution_part2
     >>> # From file
-    >>> total = solution.solve_worksheet("worksheet.txt", verbose=True)
+    >>> total = solution_part2.solve_worksheet("worksheet.txt", verbose=True)
     >>> print(f"Grand Total: {total}")
 
     >>> # From string
     >>> import io
-    >>> worksheet = "12 34\\n56 78\\n*  + \\n"
-    >>> total = solution.solve_worksheet(io.StringIO(worksheet))
-    >>> # Problem 1: 15 * 26 = 390
-    >>> # Problem 2: 37 + 48 = 85
-    >>> # Total: 475
-    >>> assert total == 475
+    >>> worksheet = '''123 328  51 64
+    ...  45 64  387 23
+    ...   6 98  215 314
+    ... *   +   *   +
+    ... '''
+    >>> total = solution_part2.solve_worksheet(io.StringIO(worksheet))
+    >>> # Grand Total: 3263827
+    >>> assert total == 3263827
 """
 
 from typing import Union, Any
@@ -37,11 +45,11 @@ def solve_worksheet(
     source: Union[str, Path, Any], verbose: bool = False, debug: bool = False
 ) -> int:
     """
-    Solve a complete worksheet and return the grand total of all problem results.
+    Solve a complete worksheet (Part 2 - right-to-left columns) and return the grand total.
 
-    This function implements the full streaming pipeline:
-    read_lines_as_stream → columns_from_lines → problem_column_groups →
-    extract_problem → evaluate_problem → sum results
+    This function implements the full streaming pipeline for Part 2:
+    read_lines_as_stream → columns_from_lines → problem_column_groups_part2 →
+    extract_problem_part2 → evaluate_problem → sum results
 
     Args:
         source: File path (str or Path) or file-like object (IO)
@@ -60,8 +68,8 @@ def solve_worksheet(
     from parser import (
         read_lines_as_stream,
         columns_from_lines,
-        problem_column_groups,
-        extract_problem,
+        problem_column_groups_part2,
+        extract_problem_part2,
     )
 
     # Initialize grand total
@@ -75,12 +83,12 @@ def solve_worksheet(
         # Transform lines to columns
         cols = columns_from_lines(lines)
 
-        # Group columns into problems
-        groups = problem_column_groups(cols)
+        # Group columns into problems (Part 2 version: right-to-left)
+        groups = problem_column_groups_part2(cols)
 
         # Process each problem
         for group in groups:
-            problem = extract_problem(group)
+            problem = extract_problem_part2(group)
             result = evaluate_problem(problem)
             grand_total += result
             problem_count += 1
@@ -117,7 +125,7 @@ def main():
     input_file = script_dir / "input.txt"
 
     total = solve_worksheet(str(input_file), verbose=True)
-    print(f"\n✨ Grand Total: {total}")
+    print(f"\n✨ Grand Total (Part 2): {total}")
 
 
 if __name__ == "__main__":

@@ -59,7 +59,6 @@ Python 3.10+ (per Constitution): Follow standard conventions
 
 - 013-day-05-part-2: Added [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION] + [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 - 013-day-05-part-2: Added Python 3.10+ + Built-in (dataclasses, typing)
-- 012-day-05-part-1: Added Python 3.10+ (uv-managed virtual environment) + Standard library (pathlib, typing), pytest for local tests, uv tooling; no third-party runtime deps needed
 
 <!-- MANUAL ADDITIONS START -->
 

@@ -151,7 +151,7 @@ def extract_problem(problem_group: ProblemGroup) -> "Problem":
     Raises:
         ValueError: If problem format is invalid (no operation found, etc.)
     """
-    from solution import Problem
+    from utils import Problem
 
     if not problem_group.columns:
         raise ValueError("Problem group has no columns")
@@ -239,3 +239,134 @@ def problem_column_groups(columns: Iterator[Column]) -> Iterator[ProblemGroup]:
         yield ProblemGroup(
             start_column=start_idx, end_column=len(all_columns) - 1, columns=all_columns[start_idx:]
         )
+
+
+def problem_column_groups_part2(columns: Iterator[Column]) -> Iterator[ProblemGroup]:
+    """
+    Group columns into problems based on separator columns (Part 2 version: right-to-left).
+
+    For Part 2, we identify problems by finding separator columns (columns of only whitespace),
+    then group adjacent non-separator columns. We yield groups from right-to-left.
+
+    Args:
+        columns: Iterator of Column objects from the worksheet
+
+    Yields:
+        ProblemGroup: Groups of contiguous non-separator columns (yielded right-to-left)
+    """
+    all_columns = list(columns)
+
+    if not all_columns:
+        return
+
+    # Find all groups (left-to-right)
+    groups = []
+    start_idx = None
+
+    for idx, col in enumerate(all_columns):
+        if col.is_separator:
+            # End of a problem group
+            if start_idx is not None:
+                group_cols = all_columns[start_idx:idx]
+                groups.append(
+                    ProblemGroup(
+                        start_column=start_idx,
+                        end_column=idx - 1,
+                        columns=group_cols,
+                    )
+                )
+                start_idx = None
+        else:
+            # Start of a problem group
+            if start_idx is None:
+                start_idx = idx
+
+    # Don't forget the last group if it ends at the last column
+    if start_idx is not None:
+        group_cols = all_columns[start_idx:]
+        groups.append(
+            ProblemGroup(
+                start_column=start_idx,
+                end_column=len(all_columns) - 1,
+                columns=group_cols,
+            )
+        )
+
+    # Yield groups in right-to-left order
+    for group in reversed(groups):
+        # Also reverse the columns within each group for right-to-left reading
+        reversed_cols = list(reversed(group.columns))
+        yield ProblemGroup(
+            start_column=group.start_column,
+            end_column=group.end_column,
+            columns=reversed_cols,
+        )
+
+
+def extract_problem_part2(problem_group: ProblemGroup) -> "Problem":
+    """
+    Extract a single problem from a group of columns (Part 2 version: right-to-left).
+
+    For Part 2:
+    - Each COLUMN (except the last row) contains one operand, read top-to-bottom
+    - The operator is the symbol at the BOTTOM of each column
+    - Numbers are reconstructed by joining digits in a column (top = most significant)
+
+    Args:
+        problem_group: A ProblemGroup containing columns of a single problem
+
+    Returns:
+        Problem: The parsed problem with operands, operation, and result
+
+    Raises:
+        ValueError: If problem format is invalid
+    """
+    from utils import Problem
+
+    if not problem_group.columns:
+        raise ValueError("Problem group has no columns")
+
+    height = problem_group.height
+    if height < 2:
+        raise ValueError("Problem must have at least 2 rows (operands and operation)")
+
+    # Get operation from last row (bottom of problem)
+    last_row = [col.values[-1] for col in problem_group.columns]
+    operation_char = None
+    for char in last_row:
+        if char in ["+", "*"]:
+            operation_char = char
+            break
+
+    if operation_char is None:
+        raise ValueError("No operation found in last row")
+
+    # Extract operands: each column (except last row) gives one number
+    # Read column top-to-bottom (most significant digit at top)
+    operands = []
+
+    for col in problem_group.columns:
+        # Read digits from top to bottom of this column (excluding the operator row)
+        digits = []
+        for row_idx in range(height - 1):  # Exclude last row (operation row)
+            char = col.values[row_idx]
+            if char.isdigit():
+                digits.append(char)
+
+        # Reconstruct the number from digits
+        if digits:
+            number_str = "".join(digits)
+            operands.append(int(number_str))
+
+    if not operands:
+        raise ValueError("No operands found in problem")
+
+    # Evaluate the problem
+    if operation_char == "+":
+        result = sum(operands)
+    else:  # "*"
+        result = 1
+        for op in operands:
+            result *= op
+
+    return Problem(operands=operands, operation=operation_char, result=result)
