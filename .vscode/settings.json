@@ -9,6 +9,23 @@
     "chat.tools.terminal.autoApprove": {
         ".specify/scripts/bash/": true,
         ".specify/scripts/powershell/": true
+    },
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#0a2015",
+        "titleBar.activeForeground": "#ffff00",
+        "titleBar.inactiveBackground": "#050f0a",
+        "titleBar.inactiveForeground": "#cccc00",
+        "editor.background": "#05140a",
+        "editor.foreground": "#c0c0c0",
+        "sideBar.background": "#05140a",
+        "sideBar.foreground": "#c0c0c0",
+        "activityBar.background": "#0a2015",
+        "activityBar.foreground": "#ffff00",
+        "statusBar.background": "#050f0a",
+        "statusBar.foreground": "#ffff00",
+        "editorGroupHeader.tabsBackground": "#05140a",
+        "tab.inactiveBackground": "#08180f",
+        "tab.activeBackground": "#0a2015"
     }
 }
 
