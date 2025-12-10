@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from solution import (
+from .solution import (
     compute_all_distances,
     euclidean_distance,
     find_circuit,

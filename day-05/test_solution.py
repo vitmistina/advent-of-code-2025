@@ -1,4 +1,4 @@
-from solution import FreshRange, merge_ranges
+from .solution import FreshRange, merge_ranges
 
 
 def test_parse_ranges_first_lines():
@@ -28,7 +28,7 @@ def test_overlapping_ranges_merge():
 def test_parse_available_ids_after_blank_line():
     # T011: Parsing available IDs after blank line
     data = "3-5\n10-14\n16-20\n12-18\n\n1\n5\n8\n11\n17\n32\n"
-    from solution import FreshRange, parse_database
+    from .solution import FreshRange, parse_database
 
     ranges, ids = parse_database(data)
     assert ranges == [FreshRange(3, 5), FreshRange(10, 14), FreshRange(16, 20), FreshRange(12, 18)]

@@ -1,7 +1,7 @@
 """Tests for Day 8 Part 2: Complete Circuit Formation."""
 
 import pytest
-from solution_part2 import solve_part2
+from .solution_part2 import solve_part2
 
 
 def test_example_final_connection():

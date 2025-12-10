@@ -4,7 +4,7 @@ Day 6, Part 1 - Vertical Math Worksheet Parser
 """
 
 import io
-import solution
+from . import solution
 
 
 def test_quickstart_example():

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from solution import apply_rotation, parse_input, solve_part1, solve_part2
+from .solution import apply_rotation, parse_input, solve_part1, solve_part2
 
 
 @pytest.fixture
@@ -120,7 +120,7 @@ def test_solve_part1_no_zeros():
 )
 def test_count_zero_crossings_during_rotation(start, direction, distance, expected):
     """Test counting zero crossings during rotation (T004 - RED Phase)."""
-    from solution import count_zero_crossings_during_rotation
+    from .solution import count_zero_crossings_during_rotation
 
     result = count_zero_crossings_during_rotation(start, direction, distance)
     assert result == expected, (

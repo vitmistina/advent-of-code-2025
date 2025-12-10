@@ -1,6 +1,6 @@
 # Import functions (will fail until implemented)
 try:
-    from solution import (
+    from .solution import (
         max_joltage,
         parse_input,
         select_max_k_digits,

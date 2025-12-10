@@ -3,7 +3,7 @@ Unit tests for day-06/parser.py (User Story 2: Multiple problems integration)
 """
 
 import pytest
-import parser
+from . import parser
 
 
 def test_parse_two_problems_end_to_end():
