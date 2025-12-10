@@ -42,27 +42,21 @@ Meta Runner & CLI for Advent of Code 2025 per Constitution 1.3.0.
    uv sync
    ```
 
-3. **Scaffold a new day**:
+3. **Setup a new day (scaffold + download)**:
 
    ```powershell
-   uv run -m cli.meta_runner scaffold --day 1
-   ```
-
-4. **Download inputs** (with dry-run option):
-
-   ```powershell
-   uv run -m cli.meta_runner download --day 1 --year 2025
+   uv run -m cli.meta_runner setup --day 1 --year 2025
    # Or dry-run to see what would happen
-   uv run -m cli.meta_runner download --day 1 --dry-run
+   uv run -m cli.meta_runner setup --day 1 --dry-run
    ```
 
-5. **Generate spec & tasks**:
+4. **Generate spec & tasks**:
 
    ```powershell
    uv run -m cli.meta_runner specify --day 1
    ```
 
-6. **Follow TDD flow**:
+5. **Follow TDD flow**:
    - RED: Run tests (they should fail initially)
    - GREEN: Implement minimal solution
    - REFACTOR: Clean up while keeping tests green

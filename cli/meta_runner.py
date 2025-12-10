@@ -43,28 +43,64 @@ def save_description_file(day_folder: Path, markdown_content: str) -> bool:
         return False
 
 
-def cmd_scaffold(args):
-    """Handle scaffold command."""
+def cmd_setup(args):
+    """Handle setup command (scaffold + download)."""
     day = args.day
+    year = args.year or get_year()
 
     if not validate_day(day):
         return 1
 
-    print(f"\n🚀 Scaffolding Day {day:02d}...")
+    print(f"\n🚀 Setting up Day {day:02d}...")
 
+    # Scaffold
     created_files = scaffold_day(day, overwrite=args.force)
-
     if created_files:
         print(f"\n✅ Scaffolded {len(created_files)} files:")
         for filepath in created_files:
             print(f"   - {filepath}")
-
-        print_tdd_reminder()
-        print_progress_reminder()
     else:
         print("\n⚠️  All files already exist. Use --force to overwrite.")
 
-    return 0
+    # Download
+    print(f"\n📥 Downloading inputs for {year} Day {day:02d}...")
+    token = get_session_token(interactive=not args.dry_run)
+    client = AoCClient(token, dry_run=args.dry_run)
+
+    # Download description
+    print("\n📄 Downloading puzzle description...")
+    desc_success, desc_content = client.download_description(year, day)
+    if desc_success:
+        articles = client.extract_task_description(desc_content)
+        if articles:
+            combined_html = "\n\n".join(articles)
+            markdown = client.convert_html_to_markdown(combined_html)
+            day_folder = Path(f"day-{day:02d}")
+            if save_description_file(day_folder, markdown):
+                print(f"✅ Description saved to {day_folder / 'description.md'}")
+            else:
+                print("⚠️  Description download succeeded but file save failed")
+        else:
+            print("⚠️  Description downloaded but no articles found")
+    else:
+        print(f"⚠️  Description download failed: {never_log_secret(desc_content)}")
+
+    # Download input
+    print("\n📥 Downloading puzzle input...")
+    input_success, input_content = client.download_input(year, day)
+    if input_success:
+        day_folder = Path(f"day-{day:02d}")
+        day_folder.mkdir(parents=True, exist_ok=True)
+        input_file = day_folder / "input.txt"
+        with open(input_file, "w", encoding="utf-8") as f:
+            f.write(input_content)
+        print(f"✅ Input saved to {input_file}")
+    else:
+        print(f"⚠️  Input download failed: {never_log_secret(input_content)}")
+
+    print_tdd_reminder()
+    print_progress_reminder()
+    return 0 if (desc_success or input_success or created_files) else 1
 
 
 def cmd_download(args):
@@ -164,12 +200,12 @@ def cmd_all(args):
 
     print(f"\n🎯 Setting up Day {day:02d} (all-in-one)...")
 
-    # Scaffold
+    # Setup (scaffold + download)
     print("\n" + "=" * 50)
-    print("STEP 1: Scaffolding")
+    print("STEP 1: Setup (Scaffold + Download)")
     print("=" * 50)
     args.force = False
-    result = cmd_scaffold(args)
+    result = cmd_setup(args)
     if result != 0:
         return result
 
@@ -225,40 +261,28 @@ For more info: https://github.com/vitmistina/advent-of-code-2025
 
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 
-    # Scaffold command
-    scaffold_parser = subparsers.add_parser(
-        "scaffold",
-        help="Scaffold day folder with files",
+    # Setup command (merged scaffold + download)
+    setup_parser = subparsers.add_parser(
+        "setup",
+        help="Scaffold day folder and download puzzle input/description",
     )
-    scaffold_parser.add_argument(
+    setup_parser.add_argument(
         "--day",
         type=int,
         required=True,
         help="Day number (1-25)",
     )
-    scaffold_parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Overwrite existing files",
-    )
-
-    # Download command
-    download_parser = subparsers.add_parser(
-        "download",
-        help="Download puzzle input and description",
-    )
-    download_parser.add_argument(
-        "--day",
-        type=int,
-        required=True,
-        help="Day number (1-25)",
-    )
-    download_parser.add_argument(
+    setup_parser.add_argument(
         "--year",
         type=int,
         help="Year (defaults to AOC_YEAR from .env or 2025)",
     )
-    download_parser.add_argument(
+    setup_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing files",
+    )
+    setup_parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be downloaded without making requests",
@@ -307,9 +331,9 @@ For more info: https://github.com/vitmistina/advent-of-code-2025
         return 0
 
     # Dispatch command
+
     commands = {
-        "scaffold": cmd_scaffold,
-        "download": cmd_download,
+        "setup": cmd_setup,
         "specify": cmd_specify,
         "all": cmd_all,
     }
