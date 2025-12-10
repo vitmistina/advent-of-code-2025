@@ -10,6 +10,7 @@
 | 6   | ✅     | ✅     | Worksheet validation          |
 | 7   | ✅     | ✅     | Equation solver               |
 | 8   | ✅     | ✅     | Circuit analysis (Union-Find) |
+| 9   | ✅     |        | Largest Red Tile Rectangle    |
 
 # Advent of Code 2025
 

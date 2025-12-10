@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "Find the largest rectangle that uses red tiles for two of its opposite corners in a grid"
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Parse Red Tile Coordinates (Priority: P1)
 
@@ -65,7 +65,7 @@ The puzzle solver needs to efficiently check all possible pairs of red tiles and
 - What happens with very large coordinates or many tiles? (Performance and precision)
 - What happens when multiple pairs of tiles produce the same maximum area? (Return any one, or all of them?)
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -83,7 +83,7 @@ The puzzle solver needs to efficiently check all possible pairs of red tiles and
 - **Red Tile**: A coordinate point (x, y) in the grid, representing a location of a red tile
 - **Rectangle**: A shape defined by two opposite corner tiles, with area calculated as width × height
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
