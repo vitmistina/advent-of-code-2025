@@ -1,4 +1,4 @@
-from solution import simulate_beams, DOWN
+from solution import simulate_beams
 
 # Test grid 1: Simple S moving down
 grid1 = ["S..", "...", ".^.", "..."]

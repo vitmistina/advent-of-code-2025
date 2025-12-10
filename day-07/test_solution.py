@@ -9,8 +9,8 @@ Tests cover:
 """
 
 import unittest
-from typing import List, Tuple
-from solution import parse_grid, simulate_beams, count_splits, DOWN, LEFT, RIGHT
+
+from solution import count_splits, parse_grid, simulate_beams
 
 
 class TestGridParsing(unittest.TestCase):
@@ -72,7 +72,7 @@ class TestBeamSimulation(unittest.TestCase):
         # Grid: S moves down to position of splitter at (2,1)
         grid = ["S...", "....", ".^..", "...."]
         start_pos = (0, 0)
-        result = simulate_beams(grid, start_pos)
+        simulate_beams(grid, start_pos)
         # Beam starts at (0, 0), moves down to (1, 0), then to (2, 0) which is '.'
         # Then to (3, 0) which is '.'
         # No splitters encountered, result should be 0

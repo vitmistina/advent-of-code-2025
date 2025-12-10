@@ -11,7 +11,6 @@ Algorithm: Queue-based BFS with state tracking
 """
 
 from collections import deque
-from typing import List, Tuple, Set
 
 # Direction constants: (delta_row, delta_col)
 DOWN = (1, 0)  # Tachyon beams always start moving down
@@ -19,7 +18,7 @@ LEFT = (0, -1)  # Emitted from splitter
 RIGHT = (0, 1)  # Emitted from splitter
 
 
-def parse_grid(filename: str) -> Tuple[List[str], Tuple[int, int]]:
+def parse_grid(filename: str) -> tuple[list[str], tuple[int, int]]:
     """
     Parse the grid from an input file and find the starting position 'S'.
 
@@ -34,7 +33,7 @@ def parse_grid(filename: str) -> Tuple[List[str], Tuple[int, int]]:
     Raises:
         ValueError: If no starting position 'S' is found
     """
-    with open(filename, "r") as f:
+    with open(filename) as f:
         grid = [line.rstrip("\n") for line in f]
 
     # Find starting position 'S'
@@ -53,7 +52,7 @@ def parse_grid(filename: str) -> Tuple[List[str], Tuple[int, int]]:
     return grid, start_pos
 
 
-def simulate_beams(grid: List[str], start_pos: Tuple[int, int]) -> int:
+def simulate_beams(grid: list[str], start_pos: tuple[int, int]) -> int:
     """
     Simulate tachyon beams moving through the grid and count splits.
 
@@ -84,7 +83,7 @@ def simulate_beams(grid: List[str], start_pos: Tuple[int, int]) -> int:
     """
     # Initialize queue with the starting beam
     queue = deque([(start_pos[0], start_pos[1], DOWN)])
-    visited: Set[Tuple[int, int, Tuple[int, int]]] = set()
+    visited: set[tuple[int, int, tuple[int, int]]] = set()
     split_count = 0
 
     while queue:
