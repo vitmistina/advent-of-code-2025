@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Largest Red Tile Rectangle API
+  version: 1.0.0
+paths:
+  /parse-coordinates:
+    post:
+      summary: Parse red tile coordinates from input
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: "2,5\n11,1\n7,3"
+      responses:
+        '200':
+          description: Parsed coordinates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    x:
+                      type: integer
+                    y:
+                      type: integer
+        '400':
+          description: Malformed or empty input
+  /rectangle-area:
+    post:
+      summary: Calculate rectangle area from two coordinates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                corner1:
+                  type: object
+                  properties:
+                    x:
+                      type: integer
+                    y:
+                      type: integer
+                corner2:
+                  type: object
+                  properties:
+                    x:
+                      type: integer
+                    y:
+                      type: integer
+      responses:
+        '200':
+          description: Rectangle area
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  area:
+                    type: integer
+        '400':
+          description: Invalid coordinates
+  /largest-rectangle:
+    post:
+      summary: Find largest rectangle from all coordinate pairs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  x:
+                    type: integer
+                  y:
+                    type: integer
+      responses:
+        '200':
+          description: Largest rectangle area
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  area:
+                    type: integer
+        '400':
+          description: Invalid or insufficient coordinates
