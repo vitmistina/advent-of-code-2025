@@ -9,7 +9,7 @@
 | 5   | ✅     | ✅     | Topological sorting           |
 | 6   | ✅     | ✅     | Worksheet validation          |
 | 7   | ✅     | ✅     | Equation solver               |
-| 8   | ✅     | ⬜     | Circuit analysis (Union-Find) |
+| 8   | ✅     | ✅     | Circuit analysis (Union-Find) |
 
 # Advent of Code 2025
 
