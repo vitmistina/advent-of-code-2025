@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "Solve AoC Day 8 Part 1: Circuit Analysis using Union-Find"
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Parse Junction Box Coordinates (Priority: P1)
 
@@ -80,7 +80,7 @@ A solver needs to determine the size of each circuit after all connections are m
 - What if the input contains duplicate coordinates? (Treat as separate boxes; they can't be connected to themselves)
 - What if fewer than 3 circuits remain? (Include all remaining circuits in the multiplication)
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -95,14 +95,14 @@ A solver needs to determine the size of each circuit after all connections are m
 - **FR-009**: System MUST compute the product of the three largest circuit sizes and return it as the final answer
 - **FR-010**: System MUST produce output that can be verified against the example (answer of 40 for the provided example)
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **Junction Box**: Represents a location in 3D space with coordinates (X, Y, Z). Attributes: id, x_coordinate, y_coordinate, z_coordinate
 - **Connection**: A link between two junction boxes. Attributes: box1_id, box2_id, distance
 - **Circuit**: A group of junction boxes connected through chains of connections. Attributes: boxes (set of box IDs), size (count of boxes)
 - **Distance Pair**: A pair of boxes with their calculated distance. Attributes: box1_id, box2_id, distance_value
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
