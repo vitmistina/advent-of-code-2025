@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Quantum Tachyon Timeline Service
+  version: 0.1.0
+  description: >-
+    Contract covering Day 7 Part 2 interactions for counting timelines from
+    manifold diagrams and validating diagram payloads.
+servers:
+  - url: https://example.com/api
+paths:
+  /timelines/count:
+    post:
+      summary: Calculate unique timelines for a manifold diagram
+      operationId: countTimelines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimelineRequest'
+      responses:
+        '200':
+          description: Timelines counted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelineResponse'
+        '400':
+          description: Invalid diagram payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /manifolds/validate:
+    post:
+      summary: Validate a manifold diagram without executing the solver
+      operationId: validateManifold
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimelineRequest'
+      responses:
+        '204':
+          description: Diagram is well-formed
+        '400':
+          description: Diagram failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+components:
+  schemas:
+    TimelineRequest:
+      type: object
+      required:
+        - diagram
+      properties:
+        diagram:
+          type: string
+          description: >-
+            Raw ASCII manifold diagram containing `S`, `^`, and `.` characters.
+          example: |
+            S..
+            .^.
+            ...
+    TimelineResponse:
+      type: object
+      required:
+        - timelineCount
+      properties:
+        timelineCount:
+          type: integer
+          minimum: 0
+          description: Number of unique timelines reachable from `S`.
+        diagnostics:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Optional map of cell coordinates (`"row,col"`) to downstream counts.
+        elapsedMs:
+          type: number
+          format: float
+          description: Processing time for the request.
+    ValidationError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - missing_start
+            - duplicate_start
+            - invalid_char
+            - empty_diagram
+        message:
+          type: string
+        location:
+          type: object
+          nullable: true
+          properties:
+            row:
+              type: integer
+            col:
+              type: integer
