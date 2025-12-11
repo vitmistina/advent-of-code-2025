@@ -612,11 +612,34 @@ def solve_part2(input_data: str) -> int:
     from itertools import combinations
 
     rect_list = list(combinations(vertices, 2))
+
+    # Pre-calculate areas and sort by descending area for early exit optimization
+    rect_with_areas = []
+    for corner1, corner2 in rect_list:
+        x1, y1 = corner1
+        x2, y2 = corner2
+        min_x_rect = min(x1, x2)
+        max_x_rect = max(x1, x2)
+        min_y_rect = min(y1, y2)
+        max_y_rect = max(y1, y2)
+
+        # Skip degenerate rectangles
+        if min_x_rect == max_x_rect or min_y_rect == max_y_rect:
+            continue
+
+        area = calculate_rectangle_area((min_x_rect, min_y_rect), (max_x_rect, max_y_rect))
+        rect_with_areas.append((area, corner1, corner2))
+
+    # Sort by area descending
+    rect_with_areas.sort(key=lambda x: x[0], reverse=True)
+
     total_rectangles = len(rect_list)
     valid_rectangles = 0
-    degenerate_rectangles = 0
+    degenerate_rectangles = total_rectangles - len(rect_with_areas)
+    rectangles_checked = 0
 
-    for rect_idx, (corner1, corner2) in enumerate(rect_list, 1):
+    for rect_idx, (area, corner1, corner2) in enumerate(rect_with_areas, 1):
+        rectangles_checked += 1
         # Ensure corner1 is top-left, corner2 is bottom-right
         x1, y1 = corner1
         x2, y2 = corner2
@@ -627,15 +650,9 @@ def solve_part2(input_data: str) -> int:
         min_y_rect = min(y1, y2)
         max_y_rect = max(y1, y2)
 
-        # Skip degenerate rectangles
-        if min_x_rect == max_x_rect or min_y_rect == max_y_rect:
-            degenerate_rectangles += 1
-            continue
-
         # Validation: Check if all points in the rectangle are inside or on the polygon
         # Use ray casting to determine if points are inside
         valid = True
-        area = calculate_rectangle_area((min_x_rect, min_y_rect), (max_x_rect, max_y_rect))
 
         # Cast two half interval rays from each corner
         # (determine initial state from vertex classification)
@@ -708,16 +725,17 @@ def solve_part2(input_data: str) -> int:
         # If all edges are valid, calculate area
         if valid:
             valid_rectangles += 1
-            if area > max_area:
-                print(
-                    f"  → Rectangle {rect_idx}/{total_rectangles}: NEW MAX area={area} at corners {corner1} and {corner2}"
-                )
-                max_area = area
+            print(
+                f"  → Rectangle {rect_idx}/{len(rect_with_areas)}: VALID! area={area} at corners {corner1} and {corner2}"
+            )
+            max_area = area
+            break  # Early exit on first valid rectangle (largest by area)
 
     print(f"\n[Phase 4] Results:")
     print(f"  • Total rectangle pairs checked: {total_rectangles}")
     print(f"  • Degenerate rectangles: {degenerate_rectangles}")
-    print(f"  • Valid rectangles: {valid_rectangles}")
+    print(f"  • Rectangles validated: {rectangles_checked}")
+    print(f"  • Valid rectangles found: {valid_rectangles}")
     print(f"  • Maximum area found: {max_area}")
     return max_area
 
