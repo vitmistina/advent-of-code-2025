@@ -3,7 +3,7 @@
 Reuses parsing and distance functions from Part 1 (solution.py).
 """
 
-from solution import compute_all_distances, parse_input
+from .solution import compute_all_distances, parse_input
 
 
 class UnionFind:

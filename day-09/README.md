@@ -2,7 +2,9 @@
 
 ## Puzzle Description
 
-Find the largest rectangle in a grid using two red tiles as opposite corners. The solution parses red tile coordinates from input, evaluates all distinct pairs, calculates rectangle areas, and returns the maximum area found.
+**Part 1**: Find the largest rectangle in a grid using two red tiles as opposite corners. The solution parses red tile coordinates from input, evaluates all distinct pairs, calculates rectangle areas, and returns the maximum area found.
+
+**Part 2**: Find the largest rectangle using red tiles as corners where ALL tiles in the rectangle (including interior) must be red or green. Green tiles are those on the polygon boundary (edges connecting consecutive red tiles) and all tiles inside the closed polygon loop formed by the red tiles.
 
 ## Implementation Overview
 
@@ -150,7 +152,9 @@ uv run ruff check day-09/solution.py --fix
 
 ## Test Summary
 
-All 21 tests passing:
+### Part 1
+
+All 21 tests passing (solution.py):
 
 - ✅ TestValidateInput: 6 tests
 - ✅ TestParseCoordinates: 3 tests
@@ -159,9 +163,36 @@ All 21 tests passing:
 - ✅ TestSolvePart1: 2 tests
 - ✅ test_part2: 1 test (stub)
 
+### Part 2
+
+All 24 tests passing (solution_part2.py):
+
+- ✅ Parsing & Validation: 5 tests
+- ✅ Winding Detection: 3 tests
+- ✅ Turn Classification: 4 tests
+- ✅ Edge Index: 3 tests
+- ✅ Ray Segment Generation: 3 tests
+- ✅ Initial Ray State: 2 tests
+- ✅ Rectangle Validation: 3 tests
+- ✅ Integration (solve_part2): 1 test
+
 Code quality:
 
 - ✅ Ruff linting: All checks passed
 - ✅ Type hints: Complete
 - ✅ Docstrings: Comprehensive with examples
+- ✅ TDD approach: Strict RED-GREEN-REFACTOR workflow followed
+
+## Running Part 2
+
+```bash
+# On example input (should output 24)
+uv run python day-09/solution_part2.py < day-09/test_input.txt
+
+# On actual puzzle input
+uv run python day-09/solution_part2.py < day-09/input.txt
+```
+
+**Note**: The Part 2 solution works correctly on the example input but may be slow on large inputs due to the point-in-polygon validation for every rectangle tile. Future optimization could use scanline algorithms or precomputed interior masks.
+
 - ✅ Edge cases: Handled and tested

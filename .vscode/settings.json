@@ -26,6 +26,11 @@
         "editorGroupHeader.tabsBackground": "#05140a",
         "tab.inactiveBackground": "#08180f",
         "tab.activeBackground": "#0a2015"
-    }
+    },
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
 

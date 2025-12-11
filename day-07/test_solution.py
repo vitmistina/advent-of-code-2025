@@ -10,7 +10,7 @@ Tests cover:
 
 import unittest
 
-from solution import count_splits, parse_grid, simulate_beams
+from .solution import count_splits, parse_grid, simulate_beams
 
 
 class TestGridParsing(unittest.TestCase):

@@ -11,8 +11,8 @@ Tests cover:
 
 import io
 import pytest
-from utils import Problem, evaluate_problem
-from solution_part2 import solve_worksheet
+from .utils import Problem, evaluate_problem
+from .solution_part2 import solve_worksheet
 
 
 class TestEvaluateProblem:

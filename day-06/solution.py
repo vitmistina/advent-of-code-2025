@@ -30,7 +30,7 @@ from typing import Union, Any
 from pathlib import Path
 
 # Import shared components
-from utils import Problem, evaluate_problem
+from .utils import Problem, evaluate_problem
 
 
 def solve_worksheet(

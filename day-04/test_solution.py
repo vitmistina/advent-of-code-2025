@@ -1,6 +1,6 @@
 """Tests for Day 4 Part 1: Accessible Paper Rolls Counter."""
 
-from solution import (
+from .solution import (
     count_adjacent_rolls,
     is_accessible,
     is_valid_position,

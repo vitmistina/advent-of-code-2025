@@ -3,7 +3,7 @@ Unit tests for day-06/solution.py (User Story 1: evaluate_problem)
 """
 
 import pytest
-import solution
+from . import solution
 
 
 def test_evaluate_problem_multiplication():

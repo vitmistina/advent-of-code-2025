@@ -1,4 +1,4 @@
-from solution_part2 import ManifoldDiagram, count_timelines
+from .solution_part2 import ManifoldDiagram, count_timelines
 
 
 def test_invalid_input_missing_start():

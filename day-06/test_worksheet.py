@@ -4,7 +4,7 @@ Unit tests for day-06/solution.py (User Story 3: solve_worksheet)
 
 import io
 import pytest
-import solution
+from . import solution
 
 
 def test_solve_worksheet_single_problem():

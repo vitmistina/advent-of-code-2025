@@ -1,16 +1,16 @@
 # Progress
 
-| Day | Part 1 | Part 2 | Notes                         |
-| --- | ------ | ------ | ----------------------------- |
-| 1   | ✅     | ✅     | List distance/similarity      |
-| 2   | ✅     | ✅     | Report safety analysis        |
-| 3   | ✅     | ✅     | Regex parsing                 |
-| 4   | ✅     | ⬜     | Grid adjacency counting       |
-| 5   | ✅     | ✅     | Topological sorting           |
-| 6   | ✅     | ✅     | Worksheet validation          |
-| 7   | ✅     | ✅     | Equation solver               |
-| 8   | ✅     | ✅     | Circuit analysis (Union-Find) |
-| 9   | ✅     |        | Largest Red Tile Rectangle    |
+| Day | Part 1 | Part 2 | Notes                          |
+| --- | ------ | ------ | ------------------------------ |
+| 1   | ✅     | ✅     | List distance/similarity       |
+| 2   | ✅     | ✅     | Report safety analysis         |
+| 3   | ✅     | ✅     | Regex parsing                  |
+| 4   | ✅     | ⬜     | Grid adjacency counting        |
+| 5   | ✅     | ✅     | Topological sorting            |
+| 6   | ✅     | ✅     | Worksheet validation           |
+| 7   | ✅     | ✅     | Equation solver                |
+| 8   | ✅     | ✅     | Circuit analysis (Union-Find)  |
+| 9   | ✅     | ✅     | Red-Green Rectangle (Ray Cast) |
 
 # Advent of Code 2025
 

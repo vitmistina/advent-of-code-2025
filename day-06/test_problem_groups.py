@@ -3,7 +3,7 @@ Unit tests for day-06/parser.py (User Story 2: problem_column_groups)
 """
 
 import pytest
-import parser
+from . import parser
 
 
 def test_problem_column_groups_single_problem():

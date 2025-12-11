@@ -4,7 +4,7 @@ Unit tests for day-06/parser.py (User Story 1: read_lines_as_stream, columns_fro
 
 import io
 import pytest
-import parser
+from . import parser
 
 
 def test_read_lines_as_stream_file(tmp_path):
