@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "Day 10 Part 2: Joltage Configuration Optimization"
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Factory Technician Configures Single Machine Joltage (Priority: P1)
 
@@ -98,7 +98,7 @@ A quality assurance engineer verifies the solution works correctly on the provid
 - What happens when a counter receives contributions from multiple buttons?
 - Can the system handle machines with single-button, single-counter scenarios?
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -132,7 +132,7 @@ A quality assurance engineer verifies the solution works correctly on the provid
 
 - **PuzzleInput**: Represents the complete problem with collection of machines and total minimum presses
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
