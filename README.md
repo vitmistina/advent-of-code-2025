@@ -11,6 +11,7 @@
 | 7   | ✅     | ✅     | Equation solver                |
 | 8   | ✅     | ✅     | Circuit analysis (Union-Find)  |
 | 9   | ✅     | ✅     | Red-Green Rectangle (Ray Cast) |
+| 10  | ✅     | ✅     | Integer Linear Programming     |
 
 # Advent of Code 2025
 
