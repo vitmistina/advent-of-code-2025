@@ -9,6 +9,8 @@ dependencies = [
     "python-dotenv",
     "beautifulsoup4>=4.14.3",
     "html2text>=2025.4.15",
+    "numpy>=2.2.6",
+    "scipy>=1.15.3",
 ]
 
 [project.optional-dependencies]

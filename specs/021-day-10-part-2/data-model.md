@@ -1,489 +1,434 @@
-# Data Model: Day 10 Part 2 - Joltage Configuration System
+# Data Model: Day 10 Part 2 - Joltage Configuration
 
-**Phase**: Phase 1 (Design & Data Model)  
+**Feature**: Joltage Configuration Optimization  
 **Date**: 2025-12-12  
-**Spec Reference**: [spec.md](./spec.md)  
-**Research Reference**: [research.md](./research.md)
+**Status**: Design Phase
 
 ---
 
-## Entity Relationships
+## Overview
 
-```
-PuzzleInput
-├── Machine[] (1 to many)
-│   ├── Button[] (1 to many)
-│   │   └── counter_indices: int[]
-│   ├── Counter[] (1 to many)
-│   │   ├── index: int
-│   │   ├── target: int
-│   │   └── current_value: int
-│   └── Solution
-│       ├── press_counts: int[] (one per button)
-│       └── total_presses: int
-
-PuzzleResult
-├── per_machine_results: int[] (one minimum presses per machine)
-└── total_minimum_presses: int (sum of all machines)
-```
+This data model defines the entities and relationships for solving the joltage counter optimization problem. The model extends Part 1's indicator light system to handle integer-valued counters with increment operations instead of binary toggles.
 
 ---
 
-## Entity Definitions
+## Core Entities
 
-### 1. Button
+### 1. Machine
 
-**Purpose**: Represents a physical button on a machine that increments specific counters.
+Represents a factory machine with buttons that increment joltage counters.
 
-**Attributes**:
-- `button_id` (int): Sequential index (0 to M-1) identifying this button
-- `affected_counter_indices` (list[int]): Which counters this button affects
-  - Example: `[1, 3]` means button increments counters 1 and 3 when pressed
-  - Must be: non-empty, sorted, unique indices
-  - Range: 0 to N-1 (where N is number of counters)
+**Attributes:**
 
-**Constraints**:
-- Must have at least one affected counter (otherwise useless)
-- Cannot have duplicate indices in affected list
-- Cannot reference counter indices outside valid range [0, N-1]
+| Attribute  | Type                 | Description                                       | Validation                                     |
+| ---------- | -------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| `lights`   | `List[int]`          | Binary indicator states (0/1) - ignored in Part 2 | Optional, legacy from Part 1                   |
+| `buttons`  | `List[Button]`       | Collection of available buttons                   | Non-empty list                                 |
+| `counters` | `List[Counter]`      | Collection of joltage counters                    | Non-empty list, length matches targets         |
+| `targets`  | `List[int]`          | Target joltage values for each counter            | Non-negative integers, length matches counters |
+| `solution` | `Optional[Solution]` | Optimal button press solution                     | Computed, may be None if infeasible            |
 
-**Validation Rules**:
+**Relationships:**
+
+- Has many `Button` (1:N)
+- Has many `Counter` (1:N)
+- Has one `Solution` (1:1, optional)
+
+**State Transitions:**
+
+```
+UNINITIALIZED → PARSED → SOLVED → VALIDATED
+```
+
+**Business Rules:**
+
+- Number of counters must equal length of targets vector
+- Button indices must reference valid counters (0 ≤ idx < num_counters)
+- Targets must be non-negative integers
+
+**Example:**
+
 ```python
-class Button:
-    def __init__(self, button_id: int, affected_counter_indices: list[int]):
-        assert isinstance(button_id, int) and button_id >= 0, "ID must be non-negative integer"
-        assert isinstance(affected_counter_indices, list), "Must be list"
-        assert len(affected_counter_indices) > 0, "Must affect at least one counter"
-        assert len(affected_counter_indices) == len(set(affected_counter_indices)), "No duplicates"
-        assert all(isinstance(idx, int) and idx >= 0 for idx in affected_counter_indices), "All indices must be non-negative integers"
-        
-        self.button_id = button_id
-        self.affected_counter_indices = sorted(affected_counter_indices)
-```
-
-**Example**:
-```
-Button(0, [1, 3])    ✓ Valid: affects counters 1 and 3
-Button(1, [2])       ✓ Valid: affects counter 2
-Button(2, [0, 0])    ✗ Invalid: duplicate indices
-Button(3, [])        ✗ Invalid: no affected counters
-Button(4, [-1, 2])   ✗ Invalid: negative index
-```
-
----
-
-### 2. Counter
-
-**Purpose**: Represents a joltage level tracker that must reach an exact target value.
-
-**Attributes**:
-- `counter_id` (int): Sequential index (0 to N-1) identifying this counter
-- `target_value` (int): Exact value this counter must reach (non-negative)
-- `current_value` (int): Current value of this counter (starts at 0, updated during solving)
-
-**Constraints**:
-- Target value must be non-negative integer
-- Current value never exceeds target (solver prunes branches that violate this)
-- Counter starts at 0 (invariant maintained during solving)
-
-**Validation Rules**:
-```python
-class Counter:
-    def __init__(self, counter_id: int, target_value: int):
-        assert isinstance(counter_id, int) and counter_id >= 0, "ID must be non-negative integer"
-        assert isinstance(target_value, int) and target_value >= 0, "Target must be non-negative integer"
-        
-        self.counter_id = counter_id
-        self.target_value = target_value
-        self.current_value = 0  # Always starts at 0
-    
-    def increment(self, amount: int = 1):
-        """Increase current value when button is pressed."""
-        assert amount > 0, "Can only increment by positive amount"
-        self.current_value += amount
-    
-    def is_at_target(self) -> bool:
-        """Check if counter has reached target."""
-        return self.current_value == self.target_value
-    
-    def exceeds_target(self) -> bool:
-        """Check if counter has surpassed target (pruning condition)."""
-        return self.current_value > self.target_value
-    
-    def reset(self):
-        """Reset to 0 for next solve attempt."""
-        self.current_value = 0
-```
-
-**Example**:
-```
-Counter(0, 5)        ✓ Valid: counter 0 needs to reach 5
-Counter(1, 0)        ✓ Valid: counter 1 already at target (needs nothing)
-Counter(2, -3)       ✗ Invalid: negative target
-```
-
----
-
-### 3. Machine
-
-**Purpose**: Represents a single factory machine that needs joltage configuration.
-
-**Attributes**:
-- `machine_id` (int): Optional identifier for this machine (e.g., line number)
-- `buttons` (list[Button]): All available buttons for this machine
-  - Must have at least 1 button
-  - M buttons (indexed 0 to M-1)
-- `counters` (list[Counter]): All joltage counters for this machine
-  - Must have at least 1 counter
-  - N counters (indexed 0 to N-1)
-  - Each counter has independent target value
-
-**Derived Attributes**:
-- `num_buttons` (int): Length of buttons list (M)
-- `num_counters` (int): Length of counters list (N)
-- `solution` (Solution): Result of solving this machine
-
-**Constraints**:
-- Button indices in buttons list must match their button_id values
-- Counter indices in counters list must match their counter_id values
-- All button affected_counter_indices must be in valid range [0, N-1]
-- No requirement that all buttons/counters are used
-
-**Validation Rules**:
-```python
-class Machine:
-    def __init__(self, machine_id: int, buttons: list[Button], counters: list[Counter]):
-        assert isinstance(buttons, list) and len(buttons) > 0, "Must have at least one button"
-        assert isinstance(counters, list) and len(counters) > 0, "Must have at least one counter"
-        
-        # Validate button IDs match positions
-        for i, btn in enumerate(buttons):
-            assert btn.button_id == i, f"Button at position {i} has ID {btn.button_id}"
-        
-        # Validate counter IDs match positions
-        for i, cnt in enumerate(counters):
-            assert cnt.counter_id == i, f"Counter at position {i} has ID {cnt.counter_id}"
-        
-        # Validate button references valid counters
-        num_counters = len(counters)
-        for btn in buttons:
-            for idx in btn.affected_counter_indices:
-                assert 0 <= idx < num_counters, f"Button {btn.button_id} references invalid counter {idx}"
-        
-        self.machine_id = machine_id
-        self.buttons = buttons
-        self.counters = counters
-        self.solution = None
-    
-    @property
-    def num_buttons(self) -> int:
-        return len(self.buttons)
-    
-    @property
-    def num_counters(self) -> int:
-        return len(self.counters)
-    
-    @property
-    def target_vector(self) -> list[int]:
-        """Get target values in order."""
-        return [c.target_value for c in self.counters]
-    
-    @property
-    def is_solved(self) -> bool:
-        """Check if all counters are at target."""
-        return all(c.is_at_target() for c in self.counters)
-    
-    @property
-    def exceeds_any_target(self) -> bool:
-        """Check if any counter exceeds its target (for pruning)."""
-        return any(c.exceeds_target() for c in self.counters)
-    
-    def reset(self):
-        """Reset all counters to 0 for solving."""
-        for counter in self.counters:
-            counter.reset()
-```
-
-**Example**:
-```
 Machine(
-    machine_id=0,
     buttons=[
-        Button(0, [0]),
-        Button(1, [1, 3]),
-        Button(2, [2])
+        Button(id=0, affected_counters=[3]),
+        Button(id=1, affected_counters=[1, 3]),
+        Button(id=2, affected_counters=[2]),
+        Button(id=3, affected_counters=[2, 3]),
+        Button(id=4, affected_counters=[0, 2]),
+        Button(id=5, affected_counters=[0, 1]),
     ],
-    counters=[
-        Counter(0, 3),
-        Counter(1, 5),
-        Counter(2, 4),
-        Counter(3, 7)
-    ]
+    targets=[3, 5, 4, 7],
+    counters=[Counter(0, 0), Counter(1, 0), Counter(2, 0), Counter(3, 0)]
 )
-✓ Valid: 3 buttons, 4 counters, all constraints satisfied
+```
+
+---
+
+### 2. Button
+
+Represents a physical button that increments specific joltage counters when pressed.
+
+**Attributes:**
+
+| Attribute           | Type        | Description                                 | Validation             |
+| ------------------- | ----------- | ------------------------------------------- | ---------------------- |
+| `id`                | `int`       | Unique button identifier within machine     | Non-negative           |
+| `affected_counters` | `List[int]` | Indices of counters this button increments  | Valid counter indices  |
+| `press_count`       | `int`       | Number of times pressed in optimal solution | Non-negative, computed |
+
+**Relationships:**
+
+- Belongs to one `Machine` (N:1)
+- Affects many `Counter` (M:N through affected_counters)
+
+**Operations:**
+
+```python
+def press(self, counters: List[Counter], times: int = 1) -> None:
+    """Increment affected counters by specified number of presses."""
+    for counter_idx in self.affected_counters:
+        counters[counter_idx].increment(times)
+```
+
+**Business Rules:**
+
+- A button may affect zero or more counters (empty list is valid)
+- Pressing a button increments each affected counter by exactly +1
+- Press count in solution must be non-negative integer
+
+**Example:**
+
+```python
+Button(id=1, affected_counters=[1, 3], press_count=2)
+# Pressing this button twice increments counter[1] by 2 and counter[3] by 2
+```
+
+---
+
+### 3. Counter
+
+Represents a joltage level tracker that can be incremented by button presses.
+
+**Attributes:**
+
+| Attribute       | Type  | Description                 | Validation                        |
+| --------------- | ----- | --------------------------- | --------------------------------- |
+| `index`         | `int` | Counter position in machine | Non-negative                      |
+| `current_value` | `int` | Current joltage level       | Non-negative integer, starts at 0 |
+| `target_value`  | `int` | Desired joltage level       | Non-negative integer              |
+
+**Relationships:**
+
+- Belongs to one `Machine` (N:1)
+- Affected by many `Button` (M:N)
+
+**Operations:**
+
+```python
+def increment(self, amount: int = 1) -> None:
+    """Increase counter value by specified amount."""
+    self.current_value += amount
+
+def is_at_target(self) -> bool:
+    """Check if counter has reached target value."""
+    return self.current_value == self.target_value
+
+def reset(self) -> None:
+    """Reset counter to initial state (0)."""
+    self.current_value = 0
+```
+
+**State Transitions:**
+
+```
+current_value: 0 → [incrementing] → target_value
+```
+
+**Business Rules:**
+
+- All counters start at current_value = 0
+- Target must be reached exactly (no overshooting in optimal solution)
+- Values cannot be negative
+
+**Example:**
+
+```python
+Counter(index=2, current_value=0, target_value=4)
+# After 4 increments: current_value = 4, is_at_target() = True
 ```
 
 ---
 
 ### 4. Solution
 
-**Purpose**: Represents the solution to a single machine (minimum button presses needed).
+Represents the optimal button press strategy for a machine.
 
-**Attributes**:
-- `machine_id` (int): ID of machine this solves
-- `press_counts` (list[int]): How many times each button is pressed
-  - Index i = how many times button i is pressed
-  - Must be non-negative integers
-  - Length must equal number of buttons
-- `total_presses` (int): Sum of all press counts
-  - Must equal sum(press_counts)
-- `is_feasible` (bool): Whether a valid solution exists
+**Attributes:**
 
-**Computed Properties**:
-- `verification` (dict): Shows how each button press affects each counter
+| Attribute             | Type                           | Description                                | Validation                                  |
+| --------------------- | ------------------------------ | ------------------------------------------ | ------------------------------------------- |
+| `button_presses`      | `np.ndarray`                   | Vector of press counts per button          | Non-negative integers, length = num_buttons |
+| `total_presses`       | `int`                          | Sum of all button presses (L1 norm)        | Non-negative                                |
+| `is_feasible`         | `bool`                         | Whether solution satisfies all constraints | Computed                                    |
+| `verification_result` | `Optional[VerificationResult]` | Proof that solution is correct             | Optional, for debugging                     |
 
-**Validation Rules**:
+**Relationships:**
+
+- Belongs to one `Machine` (1:1)
+
+**Operations:**
+
 ```python
-class Solution:
-    def __init__(self, machine_id: int, press_counts: list[int] = None):
-        self.machine_id = machine_id
-        self.press_counts = press_counts or []
-        
-        if press_counts:
-            assert all(isinstance(p, int) and p >= 0 for p in press_counts), \
-                "All press counts must be non-negative integers"
-            assert len(press_counts) > 0, "Must have at least one button press count"
-    
-    @property
-    def total_presses(self) -> int:
-        """Total button presses (sum of all press counts)."""
-        return sum(self.press_counts) if self.press_counts else 0
-    
-    @property
-    def is_feasible(self) -> bool:
-        """Whether solution is valid (all presses are non-negative)."""
-        return all(p >= 0 for p in self.press_counts) if self.press_counts else False
-    
-    def verify(self, buttons: list[Button], targets: list[int]) -> tuple[bool, list[int]]:
-        """
-        Verify this solution actually reaches targets.
-        Returns: (is_valid, final_counter_values)
-        """
-        if not self.is_feasible:
-            return False, []
-        
-        if len(self.press_counts) != len(buttons):
-            return False, []
-        
-        # Simulate button presses
-        final_values = [0] * len(targets)
-        for button_idx, press_count in enumerate(self.press_counts):
-            button = buttons[button_idx]
-            for counter_idx in button.affected_counter_indices:
-                final_values[counter_idx] += press_count
-        
-        # Check if matches targets
-        is_valid = final_values == targets
-        return is_valid, final_values
+def compute_total_presses(self) -> int:
+    """Calculate total button presses (L1 norm)."""
+    return int(np.sum(self.button_presses))
+
+def verify(self, B: np.ndarray, t: np.ndarray) -> bool:
+    """Verify solution satisfies B·x = t and x ≥ 0."""
+    return np.array_equal(B @ self.button_presses, t) and np.all(self.button_presses >= 0)
+
+def apply_to_machine(self, machine: Machine) -> None:
+    """Apply button presses to machine and update counter values."""
+    for button_id, press_count in enumerate(self.button_presses):
+        for _ in range(press_count):
+            machine.buttons[button_id].press(machine.counters)
 ```
 
-**Example**:
-```
-Solution(machine_id=0, press_counts=[1, 3, 0, 3, 1, 2])
-- total_presses = 10
-- is_feasible = True
-- verify() = (True, [3, 5, 4, 7])  ← matches targets
+**Business Rules:**
+
+- Solution must satisfy B·x = t exactly (no approximation)
+- All press counts must be non-negative integers
+- Total presses should be minimal among all feasible solutions
+
+**Example:**
+
+```python
+Solution(
+    button_presses=np.array([1, 2, 0, 1, 1, 1]),  # 6 buttons
+    total_presses=6,  # 1+2+0+1+1+1
+    is_feasible=True
+)
 ```
 
 ---
 
 ### 5. PuzzleInput
 
-**Purpose**: Represents the entire puzzle input (all machines to solve).
+Represents the complete collection of machines from the input file.
 
-**Attributes**:
-- `machines` (list[Machine]): All machines in the puzzle
-- `metadata` (dict): Optional metadata (source file, timestamp, etc.)
+**Attributes:**
 
-**Computed Properties**:
-- `num_machines` (int): Total machines to solve
-- `total_buttons` (int): Sum of buttons across all machines
-- `total_counters` (int): Sum of counters across all machines
+| Attribute               | Type            | Description                                    | Validation             |
+| ----------------------- | --------------- | ---------------------------------------------- | ---------------------- |
+| `machines`              | `List[Machine]` | All machines to be configured                  | Non-empty list         |
+| `total_minimum_presses` | `int`           | Aggregated minimum presses across all machines | Non-negative, computed |
 
-**Methods**:
-- `parse_from_text(text: str)`: Create from problem input format
-- `save_to_file(path: str)`: Persist to file
-- `load_from_file(path: str)`: Load from file
+**Relationships:**
 
-**Example**:
+- Has many `Machine` (1:N)
+
+**Operations:**
+
 ```python
-class PuzzleInput:
-    def __init__(self, machines: list[Machine], metadata: dict = None):
-        assert isinstance(machines, list) and len(machines) > 0
-        self.machines = machines
-        self.metadata = metadata or {}
-    
-    @property
-    def num_machines(self) -> int:
-        return len(self.machines)
-    
-    def solve_all(self) -> int:
-        """Solve all machines and return total presses."""
-        total = 0
-        for machine in self.machines:
-            solution = solve_machine(machine)
-            if solution is None:
-                raise ValueError(f"Machine {machine.machine_id} is infeasible")
+def solve_all_machines(self) -> int:
+    """Solve each machine and return total minimum presses."""
+    total = 0
+    for machine in self.machines:
+        solution = solve_machine(machine)
+        if solution is not None:
             machine.solution = solution
             total += solution.total_presses
-        return total
+    self.total_minimum_presses = total
+    return total
+
+def get_unsolved_machines(self) -> List[Machine]:
+    """Return machines without solutions (infeasible or not yet solved)."""
+    return [m for m in self.machines if m.solution is None]
 ```
 
----
+**Business Rules:**
 
-### 6. PuzzleResult
+- All machines are independent (solving one doesn't affect others)
+- Total minimum presses is the sum of individual machine solutions
+- Invalid machines (infeasible) should be logged but not fail entire puzzle
 
-**Purpose**: Represents the final result of solving the entire puzzle.
-
-**Attributes**:
-- `per_machine_results` (list[int]): Minimum presses for each machine in order
-- `total_minimum_presses` (int): Sum of all machine results
-- `solved_at` (datetime): When solution was computed
-- `metadata` (dict): Solution metadata (algorithm, time, etc.)
-
-**Validation**:
-```python
-class PuzzleResult:
-    def __init__(self, per_machine_results: list[int], metadata: dict = None):
-        assert isinstance(per_machine_results, list)
-        assert all(isinstance(r, int) and r >= 0 for r in per_machine_results)
-        
-        self.per_machine_results = per_machine_results
-        self.total_minimum_presses = sum(per_machine_results)
-        self.metadata = metadata or {}
-    
-    def __repr__(self) -> str:
-        return f"PuzzleResult(total={self.total_minimum_presses}, machines={len(self.per_machine_results)})"
-```
-
----
-
-## State Transitions
-
-### Machine Solving Lifecycle
-
-```
-[Unsolved] --solve_machine()--> [Solving] --complete--> [Solved]
-                                   |
-                                   +--infeasible--> [Infeasible]
-```
-
-**States**:
-- **Unsolved**: Machine created, no solution attempted
-- **Solving**: Algorithm actively working on solution
-- **Solved**: Valid solution found (solution property populated)
-- **Infeasible**: No valid solution exists
-
-**Transitions**:
-```python
-def solve_machine(machine: Machine) -> Solution:
-    """
-    Transition machine from Unsolved → Solving → Solved
-    Or: Unsolved → Infeasible if no solution exists
-    """
-    machine.reset()  # Reset all counters to 0
-    
-    solution = hybrid_solve(machine.buttons, machine.target_vector)
-    
-    if solution is None:
-        machine.solution = None  # Infeasible
-        raise InfeasibleError(f"No solution for machine {machine.machine_id}")
-    
-    machine.solution = solution
-    return solution
-```
-
----
-
-## Validation Rules Summary
-
-| Entity | Rule | Consequence |
-|--------|------|-------------|
-| Button | At least 1 affected counter | Invalid otherwise |
-| Button | No duplicate counter indices | Invalid otherwise |
-| Button | All indices ∈ [0, N-1] | OutOfBounds error |
-| Counter | Target ≥ 0 | ValueError |
-| Counter | Current ≤ Target (during solving) | Pruning trigger |
-| Machine | At least 1 button | Invalid otherwise |
-| Machine | At least 1 counter | Invalid otherwise |
-| Machine | Button IDs match positions | AssertionError |
-| Counter | Counter IDs match positions | AssertionError |
-| Solution | All press counts ≥ 0 | Infeasible |
-| Solution | Can verify against targets | True/False from verify() |
-
----
-
-## Data Flow
-
-```
-Input File
-    ↓
-parse_input() → PuzzleInput (list of Machines)
-    ↓
-For each Machine:
-    ├─ reset()
-    ├─ solve_machine() → Solution
-    └─ solution.verify() → (bool, counter_values)
-    ↓
-PuzzleResult:
-    ├─ per_machine_results = [10, 12, 11]
-    └─ total_minimum_presses = 33
-    ↓
-Output (integer)
-```
-
----
-
-## Example Data Instances
-
-### Example 1: First Machine
+**Example:**
 
 ```python
-Machine(
-    machine_id=0,
-    buttons=[
-        Button(0, [0]),           # Button 0 affects counter 0
-        Button(1, [1, 3]),        # Button 1 affects counters 1, 3
-        Button(2, [2]),           # Button 2 affects counter 2
-        Button(3, [1, 2, 3]),     # Button 3 affects counters 1, 2, 3
-        Button(4, [0, 2]),        # Button 4 affects counters 0, 2
-        Button(5, [0, 1])         # Button 5 affects counters 0, 1
-    ],
-    counters=[
-        Counter(0, 3),
-        Counter(1, 5),
-        Counter(2, 4),
-        Counter(3, 7)
-    ]
+PuzzleInput(
+    machines=[machine1, machine2, machine3],
+    total_minimum_presses=33  # 10 + 12 + 11
 )
-
-# Solution:
-Solution(
-    machine_id=0,
-    press_counts=[1, 3, 0, 3, 1, 2]
-)
-# Verify:
-# Counter 0: 1×1 + 3×0 + 0×0 + 3×0 + 1×1 + 2×1 = 1+0+0+0+1+2 = 4... wait that doesn't match
-# Need to verify this matches the button definitions correctly
 ```
-
-**Note**: Actual button effects to be verified against problem statement.
 
 ---
 
-## Next Steps (Phase 2)
+## Supporting Types
 
-1. **Parser Implementation**: Convert text format to Machine objects
-2. **Solver Implementation**: Implement hybrid algorithm from research.md
-3. **Test Suite**: Implement TDD tests based on data model
-4. **Integration**: Wire parser, solver, and output together
+### LinearSystem
+
+Represents the mathematical structure of the optimization problem.
+
+**Attributes:**
+
+| Attribute    | Type         | Description                                    |
+| ------------ | ------------ | ---------------------------------------------- |
+| `B`          | `np.ndarray` | Button matrix (n×m: counters × buttons)        |
+| `t`          | `np.ndarray` | Target vector (n×1)                            |
+| `rank`       | `int`        | Rank of matrix B                               |
+| `pivot_cols` | `List[int]`  | Column indices with pivots (basic variables)   |
+| `free_cols`  | `List[int]`  | Column indices without pivots (free variables) |
+
+**Operations:**
+
+```python
+def row_reduce(self) -> np.ndarray:
+    """Perform Gaussian elimination to row echelon form."""
+    # Returns augmented matrix [B | t] in RREF
+
+def is_feasible(self) -> bool:
+    """Check if system has any solutions."""
+    # Returns False if contradiction exists (0 = c where c ≠ 0)
+
+def count_free_variables(self) -> int:
+    """Return number of free variables (degrees of freedom)."""
+    return len(self.free_cols)
+```
+
+---
+
+### VerificationResult
+
+Proof that a solution is correct.
+
+**Attributes:**
+
+| Attribute                 | Type            | Description                                  |
+| ------------------------- | --------------- | -------------------------------------------- |
+| `satisfies_equality`      | `bool`          | B·x = t holds                                |
+| `satisfies_nonnegativity` | `bool`          | x ≥ 0 holds                                  |
+| `counter_values`          | `List[int]`     | Final counter values after applying solution |
+| `error_message`           | `Optional[str]` | Description of violation if any              |
+
+---
+
+## Validation Rules
+
+### Input Validation
+
+**Machine Parsing:**
+
+- ✅ Line must contain bracket-delimited lights: `[.##.]`
+- ✅ Line must contain parenthesis-delimited buttons: `(0,1,2)`
+- ✅ Line must contain curly-brace-delimited targets: `{3,5,4,7}`
+- ❌ Reject if any section is malformed or missing
+
+**Button Validation:**
+
+- ✅ Counter indices must be non-negative integers
+- ✅ Counter indices must be within range [0, num_counters)
+- ❌ Reject if indices out of bounds
+
+**Target Validation:**
+
+- ✅ All target values must be non-negative integers
+- ✅ Number of targets must equal number of counters
+- ❌ Reject if count mismatch or negative values
+
+### Solution Validation
+
+**Feasibility Check:**
+
+- ✅ Verify B·x = t exactly (no floating-point tolerance)
+- ✅ Verify x[i] ≥ 0 for all i
+- ✅ Verify x[i] ∈ ℤ (integer values)
+
+**Optimality Check (for testing):**
+
+- ✅ Compare with known example results (10, 12, 11)
+- ⚠️ Cannot verify optimality in general without exhaustive search
+
+---
+
+## Matrix Construction
+
+### Building the Button Matrix B
+
+Given buttons and counters:
+
+```python
+def build_button_matrix(buttons: List[Button], num_counters: int) -> np.ndarray:
+    """
+    Construct matrix B where B[i,j] = 1 if button j affects counter i, else 0.
+
+    Args:
+        buttons: List of Button objects with affected_counters
+        num_counters: Total number of counters in machine
+
+    Returns:
+        B matrix of shape (num_counters, num_buttons)
+    """
+    num_buttons = len(buttons)
+    B = np.zeros((num_counters, num_buttons), dtype=int)
+
+    for j, button in enumerate(buttons):
+        for counter_idx in button.affected_counters:
+            B[counter_idx, j] = 1
+
+    return B
+```
+
+**Example:**
+
+Buttons: `(3)`, `(1,3)`, `(2)`, `(2,3)`, `(0,2)`, `(0,1)`  
+Counters: 4 (indices 0, 1, 2, 3)
+
+```
+Matrix B:
+     B0  B1  B2  B3  B4  B5
+C0: [ 0   0   0   0   1   1 ]
+C1: [ 0   1   0   0   0   1 ]
+C2: [ 0   0   1   1   1   0 ]
+C3: [ 1   1   0   1   0   0 ]
+```
+
+---
+
+## Edge Cases
+
+### Zero Targets
+
+**Scenario**: Counter already at target (target = 0)  
+**Handling**: x = [0, 0, ..., 0] is optimal (0 presses)
+
+### Infeasible System
+
+**Scenario**: No non-negative integer solution exists  
+**Handling**: Return None, log warning
+
+### Redundant Buttons
+
+**Scenario**: Multiple buttons with identical affected_counters  
+**Handling**: Algorithm handles naturally (both are equivalent in solution)
+
+### Overdetermined System
+
+**Scenario**: More constraints than variables (n > m)  
+**Handling**: May be infeasible; row reduction detects contradictions
+
+### Underdetermined System
+
+**Scenario**: More variables than constraints (m > n)  
+**Handling**: Free variables exist; enumerate to find minimum L1 solution
+
+---
+
+## Summary
+
+**Key Entities**: Machine, Button, Counter, Solution, PuzzleInput  
+**Core Operation**: Construct B matrix, solve B·x = t for minimal ||x||₁  
+**Validation**: Input parsing, constraint satisfaction, solution verification  
+**Edge Cases**: Zero targets, infeasibility, redundancy handled explicitly
+
+**Next Step**: Define API contracts for solver functions and data transformations.

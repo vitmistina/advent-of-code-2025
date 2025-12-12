@@ -3,231 +3,188 @@
 **Branch**: `021-day-10-part-2` | **Date**: 2025-12-12 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/021-day-10-part-2/spec.md`
 
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+
 ## Summary
 
-**Primary Requirement**: Solve a system of linear equations over non-negative integers to find the minimum total button presses required to bring factory machine joltage counters to exact target levels.
+Extend Day 10 Part 1 (indicator light toggle system solved with GF(2) linear algebra) to Part 2 (joltage counter increment system solved with non-negative integer linear programming). Both parts use the same button matrix B but different fields: Part 1 operates mod 2 (toggles), Part 2 operates over non-negative integers (increments). The core requirement is finding minimum button presses to reach exact joltage targets starting from 0, where each button increments specific counters by +1.
 
-**Technical Approach**: Parse machine definitions to extract button effects and target values, then apply a linear optimization algorithm (likely Gaussian elimination with modular arithmetic or greedy optimization with backtracking) to find the minimum integer solution for each machine independently, aggregating results across all machines.
+**Technical Approach** (from research.md):
 
-**Scope**: Parse input format, implement core solver, aggregate results, validate against three provided examples with known answers (10, 12, 11 → 33 total).
+- **Algorithm**: Gaussian elimination with free variable enumeration over integers
+- **Matrix Construction**: Build B where B[i,j] = 1 if button j affects counter i
+- **Solving**: Row-reduce [B|t] to identify pivot/free variables, enumerate free variable assignments, back-substitute for pivot variables, minimize L1 norm
+- **Optimization**: Smart bounds from LP relaxation to reduce enumeration space
+- **Validation**: Verify B·x = t exactly with x ≥ 0 and x ∈ ℤ
+
+**Key Decision**: Use NumPy-only implementation (no additional MILP dependencies) for small-scale systems with k ≤ 15 free variables, expected performance <0.1s per machine.
 
 ## Technical Context
 
-**Language/Version**: Python 3.10+
-**Primary Dependencies**: pytest (testing), ruff (linting)
-**Storage**: File-based input (`input.txt`), no database required
-**Testing**: pytest with red-green-refactor TDD cycle
-**Target Platform**: Local CLI execution via `uv run -m cli.meta_runner`
-**Project Type**: Single Python module (Advent of Code challenge)
-**Performance Goals**: Single machine analysis < 1 second, full puzzle < 10 seconds
-**Constraints**: Exact target matching required, integer-only press counts
-**Scale/Scope**: Up to ~1000 machines in actual puzzle input, 10-20 buttons per machine
+**Language/Version**: Python 3.10+  
+**Primary Dependencies**: NumPy for matrix operations, SciPy for linear programming optimization  
+**Storage**: File-based input (`day-10/input.txt`, `day-10/test_input.txt`)  
+**Testing**: pytest with test-driven development (TDD) workflow  
+**Target Platform**: Local development environment (Windows/Linux/macOS)  
+**Project Type**: Single project (Advent of Code challenge)  
+**Performance Goals**: <1 second per machine, <10 seconds total for full puzzle input  
+**Constraints**: Non-negative integer solutions only, exact target matching required  
+**Scale/Scope**: ~3-5 machines in example, potentially 100+ in actual puzzle input
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-✅ **Principle I - Clean Python Code**: Solution MUST use Python 3.10+, follow PEP8, use ruff for linting/formatting. No violations expected.
+### Principle I: Clean Python Code
 
-✅ **Principle II - Structured Organization**: Solution placed in `day-10/` following existing convention with `solution_part2.py`, `test_solution_part2.py`, existing `input.txt` and `test_input.txt`.
+✅ **PASS** - Solution will use Python 3.10+ with type hints, PEP8 compliance via Ruff
 
-✅ **Principle III - Function-Based Solutions**: MUST implement `solve_part2(input_data)` with docstring, imported by main solution entry point.
+### Principle II: Structured Organization
 
-✅ **Principle IV - Test-Driven Development**: MUST follow red-green-refactor: tests written first using three documented examples (expected: 10, 12, 11), tests fail initially, then implementation makes them pass. Test file: `test_solution_part2.py`.
+✅ **PASS** - Day 10 folder already exists with required structure (`day-10/solution.py`, `input.txt`, `test_input.txt`, test files)
 
-✅ **Principle V - Automation First**: Leverage existing `uv run -m cli.meta_runner` infrastructure. No new automation required for this feature.
+### Principle III: Function-Based Solutions
 
-✅ **Principle VI - AoC Compliance**: File-based operation only, no network calls. Fully compliant.
+✅ **PASS** - Part 2 will follow existing pattern: `solve_part2(input_data)` function with docstrings
 
-✅ **Principle VII - Documentation & Progress**: Solution integration documented in `day-10/README.md`. Progress tracked in main `README.md`.
+### Principle IV: Test-Driven Development (NON-NEGOTIABLE)
 
-✅ **Principle VIII - Specification-Driven Workflow**: This feature uses Specify framework for planning. Specification complete and unambiguous.
+✅ **PASS** - TDD workflow will be enforced:
 
-**Gate Result**: ✅ **PASS** - No constitution violations. Proceed with Phase 0 research.
+- RED: Write `test_solution_part2.py` with failing tests based on 3 examples (10, 12, 11 expected)
+- GREEN: Implement `solve_part2()` and `solution_part2.py` to pass tests
+- REFACTOR: Optimize linear programming approach
+
+### Principle V: Automation First
+
+✅ **PASS** - Meta runner already downloaded inputs. Manual submission required (AoC compliant).
+
+### Principle VI: AoC Compliance & Rate Limiting
+
+✅ **PASS** - No new network interactions. Manual submission only.
+
+### Principle VII: Documentation & Progress Tracking
+
+✅ **PASS** - Progress will be tracked in main README.md upon completion
+
+### Principle VIII: Specification-Driven Workflow
+
+✅ **PASS** - Using Specify framework: spec.md → plan.md → tasks.md workflow
+
+### Principle IX: Delightful CLI
+
+✅ **PASS** - Will use existing meta runner for execution with `uv run`
+
+### Code Structure Requirements
+
+✅ **PASS** - UV-based execution, Git versioning on branch `021-day-10-part-2`
+
+**GATE STATUS**: ✅ **ALL CLEAR** - Proceed to Phase 0 Research
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/021-day-10-part-2/
-├── plan.md                          # This file (implementation plan)
-├── spec.md                          # Feature specification
-├── research.md                      # Phase 0 research (solver algorithm analysis)
-├── data-model.md                    # Phase 1 data model (Machine, Button, Counter entities)
-├── quickstart.md                    # Phase 1 quickstart guide
-├── contracts/                       # Phase 1 API contracts (parsing interface)
-│   ├── parser.md                    # Input format specification
-│   └── solver.md                    # Solver interface specification
-└── checklists/
-    └── requirements.md              # Quality checklist (complete)
+specs/[###-feature]/
+├── plan.md              # This file (/speckit.plan command output)
+├── research.md          # Phase 0 output (/speckit.plan command)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
+└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
 
 ```text
 day-10/
-├── solution.py                      # Part 1 solution (existing)
-├── solution_part2.py                # Part 2 solution (NEW - to implement)
-├── test_solution.py                 # Part 1 tests (existing)
-├── test_solution_part2.py           # Part 2 tests (NEW - to implement via TDD)
-├── test_input.txt                   # Part 1 test input (existing)
-├── input.txt                        # Actual puzzle input
-├── description.md                   # Problem description
-└── README.md                        # Day 10 notes and progress (to update)
+├── solution.py              # Part 1 implementation (existing)
+├── solution_part2.py        # Part 2 implementation (NEW)
+├── test_solution.py         # Part 1 tests (existing)
+├── test_solution_part2.py   # Part 2 tests (NEW)
+├── input.txt                # Actual puzzle input (existing)
+├── test_input.txt           # Example machines (existing)
+├── description.md           # Problem description (existing)
+└── README.md                # Notes and explanations (optional)
 ```
 
-**Structure Decision**: Single-file solution approach (aligned with existing day folders). Part 2 solution in new `solution_part2.py` file with corresponding tests in `test_solution_part2.py`. Leverages existing parsing infrastructure from Part 1 where applicable.
+**Structure Decision**: Day 10 follows Advent of Code standard structure with separate files for each part. Part 2 extends Part 1 by reusing parsing logic while implementing new solver algorithm for integer linear programming. All code resides in `day-10/` folder per Constitution Principle II.
 
 ## Complexity Tracking
 
-No constitution violations requiring justification. All design decisions follow established Advent of Code patterns in this repository.
+> **Fill ONLY if Constitution Check has violations that must be justified**
+
+**Status**: No violations identified. All constitution principles are satisfied.
 
 ---
 
-## Implementation Phases
+## Post-Design Constitution Re-Check
 
-### Phase 0: Research & Analysis
+_Re-evaluated after Phase 1 design completion_
 
-**Goal**: Understand the algorithm space and identify the optimal solver approach.
+### Principle I: Clean Python Code
 
-**Tasks**:
+✅ **PASS** - Design uses type hints, NumPy idioms, modular functions with docstrings
 
-1. **Algorithm Research** - Analyze the mathematical nature of the problem
-   - Determine if this is a linear Diophantine equation system
-   - Research solution approaches: Gaussian elimination, greedy optimization, constraint solving
-   - Evaluate performance characteristics for different algorithms
-   - Document findings in `research.md`
+### Principle II: Structured Organization
 
-2. **Edge Case Analysis** - Identify and document special cases
-   - Zero targets (machine already configured)
-   - Single button/counter scenarios
-   - Large target numbers (hundreds/thousands)
-   - Redundant buttons (multiple solutions exist)
-   - Infeasible scenarios (impossible to reach target)
+✅ **PASS** - Files organized in `day-10/` folder, clear separation between Part 1 and Part 2
 
-3. **Parsing Deep Dive** - Understand the exact input format
-   - Extract all parts: indicator lights (ignored), buttons, targets
-   - Handle variations in button/target count
-   - Test parsing on all three provided examples
-   - Document in `research.md`
+### Principle III: Function-Based Solutions
 
-**Output**: `research.md` containing algorithm evaluation, edge case analysis, and parsing strategy.
+✅ **PASS** - Core API defined: `solve_part2()`, `solve_integer_linear_system()`, `build_button_matrix()`
 
----
+### Principle IV: Test-Driven Development (NON-NEGOTIABLE)
 
-### Phase 1: Design & Data Model
+✅ **PASS** - Quickstart explicitly enforces RED-GREEN-REFACTOR: write tests first, verify failures, implement
 
-**Goal**: Define entities, contracts, and implementation approach.
+### Principle V: Automation First
 
-**Tasks**:
+✅ **PASS** - Reuses existing meta runner, no new automation needed
 
-1. **Data Model Definition** - Formalize entities from spec
-   - Machine: buttons list + targets list + solution
-   - Button: indices + press count
-   - Counter: index + target + current value
-   - Create `data-model.md` with full schema and validation rules
+### Principle VI: AoC Compliance & Rate Limiting
 
-2. **API/Contract Definition** - Define public interfaces
-   - `parse_machine(line: str) -> Machine`
-   - `solve_machine(machine: Machine) -> int` (returns min presses)
-   - `solve_all(machines: List[Machine]) -> int` (returns total)
-   - Create `contracts/parser.md` and `contracts/solver.md`
+✅ **PASS** - Manual submission only, no network interactions
 
-3. **Test Strategy** - Plan test structure using TDD
-   - Test 1: Parse first example, verify 6 buttons and 4 targets
-   - Test 2: Solve first example, expect 10 presses minimum
-   - Test 3: Solve second example, expect 12 presses
-   - Test 4: Solve third example, expect 11 presses
-   - Test 5: Aggregate three examples, expect 33 total
-   - Document in `quickstart.md`
+### Principle VII: Documentation & Progress Tracking
 
-**Output**: `data-model.md`, `contracts/parser.md`, `contracts/solver.md`, `quickstart.md`
+✅ **PASS** - Documentation artifacts generated (research, data-model, contracts, quickstart)
+
+### Principle VIII: Specification-Driven Workflow
+
+✅ **PASS** - Full workflow executed: spec.md → plan.md (with research, data-model, contracts, quickstart)
+
+### Principle IX: Delightful CLI
+
+✅ **PASS** - Uses `uv run` commands throughout quickstart
+
+### Code Structure Requirements
+
+✅ **PASS** - UV runtime, dependency management verified, Git branch `021-day-10-part-2`
+
+**FINAL GATE STATUS**: ✅ **ALL CLEAR** - Proceed to Phase 2 (Task Generation with `/speckit.tasks` command)
 
 ---
 
-### Phase 2: Implementation
+## Implementation Readiness
 
-**Goal**: Build working solution following TDD workflow.
+### Ready for Development
 
-**Tasks**:
+- ✅ Technical unknowns resolved (research.md)
+- ✅ Data model defined (data-model.md)
+- ✅ API contracts specified (contracts/solver-api.md)
+- ✅ Implementation guide provided (quickstart.md)
+- ✅ Agent context updated for Copilot assistance
 
-1. **Test-Driven Development Cycle**
-   - **RED**: Write all tests first (all fail initially)
-     - Parser tests (extract buttons and targets)
-     - Solver tests (minimum presses for each example)
-     - Aggregation tests (sum across machines)
-   - **GREEN**: Implement minimum code to pass each test group
-     - Start with parser (simplest, enables all other tests)
-     - Implement solver core (brute force acceptable if performance OK)
-     - Add aggregation logic
-   - **REFACTOR**: Optimize while keeping tests green
-     - Optimize solver algorithm if needed (< 1 sec per machine)
-     - Clean up code style
+### Next Steps
 
-2. **Code Organization**
-   - Create `day-10/solution_part2.py` with `solve_part2(input_data: str) -> int`
-   - Create `day-10/test_solution_part2.py` with all TDD tests
-   - Update `day-10/solution.py` if needed to integrate Part 2
-   - Add module docstrings and function docstrings per Principle III
+1. Run `/speckit.tasks` command to generate task breakdown from this plan
+2. Execute tasks in TDD order (RED → GREEN → REFACTOR)
+3. Solve actual puzzle and submit answer manually
+4. Update progress tracker in README.md
 
-3. **Validation**
-   - Run tests: all should pass (green)
-   - Verify Part 1 still works (no regression)
-   - Manual verification: run examples, confirm outputs match spec
-   - Performance check: measure time on example input
-
-**Output**: Working `solution_part2.py` with 100% passing tests, all spec scenarios validated.
-
----
-
-### Phase 3: Documentation & Integration
-
-**Goal**: Complete solution documentation and integrate with repository.
-
-**Tasks**:
-
-1. **README Update**
-   - Update `day-10/README.md` with Part 2 explanation
-   - Document algorithm choice and performance characteristics
-   - Add notes on any interesting edge cases encountered
-   - Update main repository `README.md` with Day 10 completion status
-
-2. **Code Review Checklist**
-   - [ ] All tests passing (green status)
-   - [ ] No ruff linting errors
-   - [ ] All functions have docstrings
-   - [ ] Code follows PEP8
-   - [ ] Part 1 integration verified (no regressions)
-   - [ ] Performance < 1s per machine confirmed
-   - [ ] All three examples produce exact expected results
-
-3. **Final Commit**
-   - Stage all changes
-   - Create meaningful commit message
-   - Push to `021-day-10-part-2` branch
-
-**Output**: Fully integrated, documented solution ready for submission to AoC.
-
----
-
-## Success Metrics
-
-- ✅ Parser correctly extracts buttons and targets from all example inputs (100% accuracy)
-- ✅ Solver finds exact minimum presses: 10, 12, 11 for examples (0% error)
-- ✅ Aggregation produces 33 for three examples combined
-- ✅ All tests pass (red-green-refactor complete)
-- ✅ Performance: < 1 second per machine, < 10 seconds total
-- ✅ Zero ruff violations on new code
-- ✅ Complete documentation in place
-
----
-
-## Risk Assessment
-
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|-----------|
-| Algorithm complexity | Low | High | Research phase identifies optimal approach before coding |
-| Large input performance | Medium | Medium | Prototype solver on examples, optimize before full input |
-| Parse errors | Low | Medium | Comprehensive TDD tests cover all variations |
-| Part 1 regression | Low | Medium | Run full Part 1 test suite after each change |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

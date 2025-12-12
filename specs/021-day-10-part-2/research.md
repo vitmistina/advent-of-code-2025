@@ -1,448 +1,347 @@
-# Research Phase: Day 10 Part 2 - Algorithm Analysis & Strategy
+# Research: Day 10 Part 2 - Integer Linear Programming Approach
 
-**Phase**: Phase 0 (Research & Analysis)  
 **Date**: 2025-12-12  
-**Status**: Complete  
-**Output of**: Specification analysis and technical investigation
+**Feature**: Joltage Configuration Optimization  
+**Purpose**: Resolve technical unknowns and select optimal algorithms
 
 ---
 
-## Problem Summary
+## Problem Formulation
 
-Given a factory machine with:
-- **M buttons** (0 to M-1), each affecting specific counters
-- **N joltage counters** (0 to N-1), each with a target value
-- Counters start at 0
-- Each button press increments its affected counters by 1
+### Mathematical Model
 
-**Objective**: Minimize total button presses (sum of all press counts) to reach all target values simultaneously.
+**Given:**
 
-**Scope**: Solve this for each machine independently, then aggregate results.
+- Matrix B (n×m): Each column represents a button, each row a counter
+- Target vector t (n×1): Desired joltage levels for each counter
+- Constraint: B·x = t, where x ≥ 0 and x ∈ ℤᵐ
 
----
+**Objective:** Minimize ||x||₁ = sum(x) (total button presses)
 
-## Mathematical Formulation
+**Example:**
 
-### System of Linear Equations
-
-Let:
-- $x_i$ = number of times button $i$ is pressed
-- $b_{ij}$ = 1 if button $i$ affects counter $j$, 0 otherwise
-- $t_j$ = target value for counter $j$
-
-**Constraint System**:
-$$\sum_{i=0}^{M-1} b_{ij} \cdot x_i = t_j \quad \forall j \in [0, N-1]$$
-
-**Optimization**:
-$$\text{Minimize} \sum_{i=0}^{M-1} x_i$$
-
-**Subject to**:
-$$x_i \geq 0 \text{ and integer} \quad \forall i$$
-
-### Matrix Form
-
-$$B \cdot \vec{x} = \vec{t}$$
-
-where:
-- $B$ is an $N \times M$ matrix (counters × buttons)
-- $\vec{x}$ is the $M \times 1$ solution vector (button presses)
-- $\vec{t}$ is the $N \times 1$ target vector
-
-**Example 1** (from problem):
 ```
 Buttons: (3), (1,3), (2), (2,3), (0,2), (0,1)
-Targets: {3,5,4,7}
+Targets: {3, 5, 4, 7}
 
-Matrix B (4x6):
+Matrix B (4 counters × 6 buttons):
      B0  B1  B2  B3  B4  B5
-C0:  1   0   0   0   1   1    = 3
-C1:  0   1   0   1   0   1    = 5
-C2:  0   1   1   1   1   0    = 4
-C3:  1   1   0   0   0   0    = 7
+C0: [ 0   0   0   0   1   1 ]
+C1: [ 0   1   0   0   0   1 ]
+C2: [ 0   0   1   1   1   0 ]
+C3: [ 1   1   0   1   0   0 ]
 
-Solution: x = [1, 3, 0, 3, 1, 2]ᵀ
-Total presses: 1+3+0+3+1+2 = 10 ✓
+Target t: [3, 5, 4, 7]ᵀ
 ```
 
----
+### Relationship to Part 1
 
-## Algorithm Evaluation
+**Part 1 (Indicator Lights):**
 
-### Option 1: Gaussian Elimination (Linear Algebra)
+- System: B·x = t (mod 2) over GF(2)
+- Operations: XOR (toggle)
+- Solution: Gaussian elimination over binary field
 
-**Approach**: Use Gaussian elimination with back-substitution to solve the system exactly.
+**Part 2 (Joltage Counters):**
 
-**Advantages**:
-- Polynomial time complexity: $O(M^2 \cdot N)$ or $O(N^3)$ depending on shape
-- Handles exact integer solutions when they exist
-- Can detect infeasible systems early
+- System: B·x = t over non-negative integers
+- Operations: Addition (increment)
+- Solution: Integer linear programming with L1 minimization
 
-**Disadvantages**:
-- May produce non-integer intermediate results
-- Requires handling of floating-point precision issues
-- Must validate that solution contains only non-negative integers
-- Risk of numerical instability
-
-**Complexity**: $O(\min(M^2N, N^3))$ for $N$ counters, $M$ buttons
-
-**Feasibility**: **MODERATE** - Works but requires careful handling of integer constraints
+**Key insight**: Same matrix B, different algebraic structure
 
 ---
 
-### Option 2: Brute Force Search with Pruning
+## Technology Selection
 
-**Approach**: Enumerate button press combinations, pruning branches that exceed any target.
+### Decision: NumPy-Based Gaussian Elimination with Integer Enumeration
 
-**Algorithm**:
-1. Start with $x = [0, 0, ..., 0]$
-2. For each button $i$, try all press counts from 0 to max_target
-3. Prune branches where any counter exceeds its target
-4. Return first solution found (greedy: try fewer presses first)
+**Rationale:**
 
-**Advantages**:
-- Simple to implement and understand
-- Naturally handles integer constraints
-- Works for any button configuration (no singularity issues)
-- Can terminate early if solution found
+1. **No Additional Dependencies**: Leverages existing NumPy (already used in Part 1)
+2. **Problem Scale**: Small systems (m ≤ 20 buttons, n ≤ 20 counters) suit direct methods
+3. **Code Reuse**: Adapts Part 1's Gaussian elimination structure to integer arithmetic
+4. **Performance**: Expected <0.1s per machine for k ≤ 10 free variables (enumeration: O(2^k · n · m))
+5. **Optimality Guarantee**: Exhaustive search over solution space ensures global minimum
 
-**Disadvantages**:
-- Exponential worst-case: $O(T^M)$ where $T$ is average target
-- Very slow for large targets or many buttons
-- May timeout on large inputs
+**Implementation Strategy:**
 
-**Complexity**: Worst case $O(T^M)$, best case $O(1)$
-
-**Feasibility**: **MODERATE** - Works for examples but may be too slow for actual puzzle
-
----
-
-### Option 3: Integer Linear Programming (ILP)
-
-**Approach**: Formulate as ILP and use a solver library.
-
-**Algorithm**:
-1. Define system $B \vec{x} = \vec{t}$
-2. Define objective: minimize $\sum x_i$
-3. Add constraints: $x_i \geq 0$, $x_i \in \mathbb{Z}$
-4. Use library (e.g., `scipy.optimize.linprog` or PuLP)
-
-**Advantages**:
-- Optimal solution guaranteed
-- Battle-tested algorithms
-- Handles complex constraints easily
-- Good performance for realistic sizes
-
-**Disadvantages**:
-- Requires external dependency (may not be available)
-- Overkill for this problem's mathematical simplicity
-- ILP is NP-hard in general (though often fast in practice)
-
-**Complexity**: Variable based on solver (often much better than worst case)
-
-**Feasibility**: **HIGH** - But adds dependency; check if already available
-
----
-
-### Option 4: Greedy + Backtracking (Hybrid)
-
-**Approach**: Try a greedy approach first, backtrack if stuck.
-
-**Algorithm**:
-1. Process counters in order: greedily find button combination for counter 0
-2. Check if that combination works for counter 1
-3. If not, backtrack and try alternative button combinations
-4. Return first valid solution found
-
-**Advantages**:
-- Combines simplicity of greedy with exactness of backtracking
-- Often terminates quickly on realistic inputs
-- Natural integer handling
-- No external dependencies
-
-**Disadvantages**:
-- May miss optimal solution (depends on ordering)
-- Still exponential in worst case
-- Requires careful implementation to avoid infinite loops
-
-**Complexity**: $O(M^N)$ worst case, but typically much better
-
-**Feasibility**: **HIGH** - Good balance of simplicity and performance
-
----
-
-## Algorithm Decision
-
-### Recommended: **Option 4 - Greedy + Backtracking (Hybrid)**
-
-**Rationale**:
-1. **Practical Performance**: For Advent of Code inputs, greedy often finds optimal or near-optimal solution quickly
-2. **No Dependencies**: Pure Python, no external solvers required
-3. **Integer-Native**: Naturally works with integer constraints
-4. **Understandability**: Clear logic flow for code review and maintenance
-5. **Testability**: Easy to trace execution path and debug
-
-**Fallback Strategy**: If hybrid approach times out, implement Option 1 (Gaussian elimination) with integer validation
-
-### Implementation Approach
-
-**Step 1: Greedy Solver**
 ```python
-def greedy_solve(buttons, targets):
+def solve_integer_linear_system(B: np.ndarray, t: np.ndarray) -> Optional[np.ndarray]:
     """
-    Greedy approach: for each counter, find minimum button presses needed.
-    May not work if buttons have overlapping effects on multiple counters.
+    Solve B·x = t for non-negative integer x minimizing sum(x).
+
+    Algorithm:
+    1. Row-reduce augmented matrix [B | t] to identify pivot/free variables
+    2. Check feasibility (no contradictions like 0 = c where c ≠ 0)
+    3. Enumerate free variable assignments in feasible ranges
+    4. For each assignment, back-substitute to solve for pivot variables
+    5. Validate non-negativity and exact match, track minimum L1 norm
+    6. Return optimal solution vector x
     """
-    presses = [0] * len(buttons)
-    current = [0] * len(targets)
-    
-    for counter_idx, target in enumerate(targets):
-        needed = target - current[counter_idx]
-        if needed < 0:
-            # Already exceeded target - greedy failed
-            return None
-        
-        # Find buttons affecting this counter, minimize extra increments
-        affecting_buttons = [i for i, btn in enumerate(buttons) 
-                            if counter_idx in btn]
-        if not affecting_buttons:
-            if needed > 0:
-                return None  # Infeasible
-            continue
-        
-        # For each affecting button, calculate how many presses needed
-        # Choose the one that minimizes collateral damage
-        best_button = affecting_buttons[0]
-        presses[best_button] += needed
-        
-        # Update all affected counters
-        for j in buttons[best_button]:
-            current[j] += needed
-    
-    # Verify solution
-    if current == targets:
-        return sum(presses), presses
-    return None
+    # Step 1: Gaussian elimination with integer arithmetic
+    # Step 2: Identify free variables (columns without pivots)
+    # Step 3: Enumerate free variable values (start with small bounds)
+    # Step 4: Back-substitute and validate
+    # Step 5: Return best solution
 ```
 
-**Step 2: Backtracking Solver**
+**Complexity:**
+
+- Row reduction: O(n² · m)
+- Enumeration: O(2^k) where k = m - rank(B)
+- Per enumeration: O(n · m) for validation
+- **Total**: O(n² · m + 2^k · n · m) ≈ O(2^k · n · m) for k < 15
+
+### Alternatives Considered
+
+#### Alternative 1: SciPy `linprog` with `integrality` Constraints
+
+**Pros:**
+
+- Built into SciPy (no extra dependencies)
+- Uses HiGHS MILP solver (production-grade)
+- Handles edge cases robustly
+
+**Cons:**
+
+- Designed for large-scale problems (overkill for m ≤ 20)
+- Potential convergence issues with exact equality constraints
+- Less educational (black-box solver)
+
+**When to use:** If problem scales beyond m > 30 or enumeration becomes infeasible
+
+#### Alternative 2: Dedicated MILP Solvers (PuLP, CVXPY)
+
+**Pros:**
+
+- Mature solvers (CBC, GLPK, Gurobi)
+- Handle complex constraints and large problems
+- Standard tooling for optimization
+
+**Cons:**
+
+- **Requires additional dependencies** (CBC solver ~10MB)
+- Constitution Principle IX prefers minimal dependencies for AoC
+- Over-engineering for current scale
+
+**When to use:** If problem complexity increases significantly in future parts
+
+#### Alternative 3: LP Relaxation + Rounding Heuristic
+
+**Pros:**
+
+- Fast (LP solvable in polynomial time)
+- Provides lower bound on optimal solution
+
+**Cons:**
+
+- No optimality guarantee (rounding may miss true minimum)
+- Requires validation and potentially local search
+- AoC expects exact answers
+
+**When to use:** As a preprocessing step to bound enumeration ranges
+
+---
+
+## Best Practices
+
+### Integer Arithmetic Handling
+
+**Challenge**: Gaussian elimination traditionally uses floating-point division, but we need exact integer solutions.
+
+**Solution Patterns:**
+
+1. **Fraction-Based Elimination**: Use Python's `fractions.Fraction` during row reduction to maintain exact rational arithmetic, then verify integer solutions exist.
+
+2. **GCD-Based Elimination**: Use integer linear combinations with gcd calculations to eliminate without introducing fractions.
+
+3. **Hybrid Approach**: Use floating-point LP relaxation to bound search space, then enumerate integers.
+
+**Recommended**: Fractions module for exact arithmetic during elimination, then enumerate integer solutions.
+
 ```python
-def backtrack_solve(buttons, targets, max_presses=None):
-    """
-    Backtracking approach: try button combinations, backtrack on constraint violation.
-    """
-    if max_presses is None:
-        max_presses = sum(targets)  # Upper bound
-    
-    def search(button_idx, current_state, presses_so_far):
-        # Base case: all buttons processed
-        if button_idx == len(buttons):
-            if current_state == targets:
-                return presses_so_far
-            return None
-        
-        # Try different press counts for this button
-        button = buttons[button_idx]
-        max_for_this_button = max_presses - sum(presses_so_far)
-        
-        for presses in range(max_for_this_button + 1):
-            # Apply button presses
-            new_state = current_state[:]
-            for counter_idx in button:
-                new_state[counter_idx] += presses
-            
-            # Pruning: if any counter exceeds target, stop
-            if any(new_state[i] > targets[i] for i in range(len(targets))):
-                continue
-            
-            # Recurse
-            result = search(button_idx + 1, new_state, 
-                          presses_so_far + presses)
-            if result is not None:
-                return result
-        
-        return None
-    
-    return search(0, [0] * len(targets), 0)
+from fractions import Fraction
+import numpy as np
+
+def gaussian_elimination_rational(B, t):
+    """Row-reduce over rationals to avoid floating-point errors."""
+    n, m = B.shape
+    aug = np.array([[Fraction(B[i, j]) for j in range(m)] + [Fraction(t[i])]
+                    for i in range(n)])
+    # Perform row reduction...
+    return aug
 ```
 
-**Step 3: Hybrid Solver**
+### Free Variable Enumeration Strategy
+
+**Challenge**: For k free variables, naively trying all combinations in {0, ..., max(t)} yields max(t)^k possibilities (infeasible for k > 5).
+
+**Smart Bounds:**
+
+1. **LP Relaxation Upper Bound**: Solve continuous relaxation, use ceiling(x_lp[i]) as upper bound for x[i]
+2. **Component-wise Bound**: For button i affecting counters C, upper bound is max(t[c] for c in C)
+3. **Progressive Search**: Start with small bounds (0-10), expand if no solution found
+
 ```python
-def solve_machine(buttons, targets):
-    """
-    Try greedy first, fall back to backtracking if needed.
-    """
-    # Try greedy approach first (fast)
-    result = greedy_solve(buttons, targets)
-    if result is not None:
-        return result[0]  # Return total presses
-    
-    # Fall back to backtracking (slower but complete)
-    result = backtrack_solve(buttons, targets)
-    if result is not None:
-        return result
-    
-    # No solution found
-    return None
+def get_enumeration_bounds(B, t, x_lp):
+    """Determine smart bounds for free variable enumeration."""
+    m = B.shape[1]
+    bounds = []
+    for i in range(m):
+        # Use LP relaxation ceiling + small buffer
+        upper = int(np.ceil(x_lp[i])) + 2
+        # But cap at reasonable max (sum of targets is absolute upper bound)
+        upper = min(upper, sum(t))
+        bounds.append((0, upper))
+    return bounds
+```
+
+### Edge Case Handling
+
+**Infeasible Systems:**
+
+- Detection: After row reduction, check for contradictory rows (0 = c where c ≠ 0)
+- Response: Return None or raise InfeasibleError
+
+**Zero Targets:**
+
+- All counters already at target → x = [0, 0, ..., 0] (minimum is 0 presses)
+
+**Underdetermined Systems (k > 0 free variables):**
+
+- Standard case → enumerate free variable space
+
+**Overdetermined Systems (more equations than variables):**
+
+- May be infeasible or have unique solution → row reduction reveals this
+
+---
+
+## Performance Optimization
+
+### Expected Complexity Analysis
+
+**Typical AoC Input Characteristics:**
+
+- Number of machines: 3-100
+- Buttons per machine: 4-10
+- Counters per machine: 4-10
+- Rank deficiency: k = 2-5 (few free variables)
+
+**Performance Estimates:**
+
+| Free Variables (k) | Enumeration Space | Time per Machine |
+| ------------------ | ----------------- | ---------------- |
+| k ≤ 5              | ≤ 10^5            | <0.01s           |
+| k = 8              | ≈ 10^8            | ~1s              |
+| k = 10             | ≈ 10^10           | ~100s (too slow) |
+
+**Mitigation for k > 8:**
+
+- Use LP relaxation to narrow search space
+- Implement branch-and-bound pruning
+- Fall back to SciPy `linprog` with `integrality`
+
+### Caching and Memoization
+
+**Opportunity**: If multiple machines share identical button structures (same B matrix), memoize solutions.
+
+**Implementation**:
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+def solve_cached(B_tuple, t_tuple):
+    """Cache solutions for identical machine structures."""
+    B = np.array(B_tuple)
+    t = np.array(t_tuple)
+    return solve_integer_linear_system(B, t)
 ```
 
 ---
 
-## Edge Cases Analysis
+## Integration with Part 1
 
-### 1. Zero Target
-**Case**: Machine where some targets are 0 (counter already configured)
-```
-Buttons: (0), (1)
-Targets: {0, 5}
-Solution: Don't press button 0, press button 1 five times → Total: 5
-```
-**Handling**: Solver naturally handles this; target=0 requires 0 presses for that counter
+### Code Reuse Opportunities
 
-### 2. Single Button, Single Counter
-**Case**: Minimal machine
-```
-Buttons: (0)
-Targets: {7}
-Solution: Press button 0 seven times → Total: 7
-```
-**Handling**: Simple case; backtracking terminates immediately
+**Shared Components:**
 
-### 3. Button Affects Nothing
-**Case**: Unused button
-```
-Buttons: (0), (99)
-Targets: {5}
-Solution: Press button 0 five times, ignore button 1 → Total: 5
-```
-**Handling**: Solver naturally ignores unused buttons (press count = 0)
+- `parse_input()` and `parse_line()` — already extract jolts
+- Matrix construction logic — build B from button definitions
+- Test infrastructure — extend existing test framework
 
-### 4. Infeasible System
-**Case**: No solution exists
-```
-Buttons: (0,1)
-Targets: {3, 4}
-Problem: Both counters increment together, so they always differ by 0
-Solution: IMPOSSIBLE (can't reach {3,4} with single button affecting both)
-```
-**Handling**: Backtracking returns None; report "infeasible" error
+**Separate Components:**
 
-### 5. Multiple Solutions
-**Case**: Redundant buttons
-```
-Buttons: (0), (0), (0)
-Targets: {5}
-Solutions: Many exist (e.g., press B0 five times, or B1 five times, etc.)
-Optimal: Any single solution with total presses = 5
-```
-**Handling**: Backtracking finds first valid solution; guaranteed to be optimal for sum
+- Solver algorithm (GF(2) vs integer LP)
+- Solution validation (mod 2 vs exact integer)
 
-### 6. Large Targets
-**Case**: Very large target numbers
-```
-Buttons: (0,1,2,3,4)
-Targets: {1000, 1000, 1000, 1000, 1000}
-Solution: Press button 0 once → All counters reach 1000 → Total: 1
-```
-**Handling**: Backtracking may be slow; consider optimization (detect common targets)
-
-### 7. Overlapping Effects
-**Case**: Multiple buttons affect same counters
-```
-Buttons: (0), (0,1), (1)
-Targets: {3, 5}
-Possible: Press B0 three times (counter 0 = 3), press B2 five times (counter 1 = 5)
-Total: 8
-Or: Press B1 five times (both counters = 5), press B0 never? → No, counter 0 = 5 ≠ 3
-```
-**Handling**: Backtracking explores all combinations; finds optimal mix
-
----
-
-## Performance Predictions
-
-### Example 1: Small Machine (4 counters, 6 buttons, targets ~5)
-- **Greedy**: ~1ms (linear scan)
-- **Backtracking**: ~10ms (limited search space)
-- **Expected**: Fast, under 1ms
-
-### Example 2: Medium Machine (10 counters, 15 buttons, targets ~10-20)
-- **Greedy**: ~1ms
-- **Backtracking**: ~100ms-1s (exponential but pruned)
-- **Expected**: Under 1 second
-
-### Example 3: Actual Puzzle (up to 1000 machines, 20 buttons, large targets)
-- **Greedy + Backtracking Hybrid**: ~100ms-1s per machine
-- **Total Puzzle**: ~100s worst case, likely < 10s with pruning optimizations
-- **Expected**: Under 10 seconds (meets spec requirement)
-
----
-
-## Implementation Notes
-
-### Optimization Techniques
-
-1. **Early Pruning**: Stop backtracking branch if any counter exceeds target
-2. **Memoization**: Cache results for duplicate subproblems (if any)
-3. **Ordering**: Process counters with fewest affecting buttons first
-4. **Greedy Seed**: Use greedy result as upper bound for backtracking
-5. **Button Sorting**: Sort buttons by specificity (affect fewer counters first)
-
-### Testing Strategy (TDD)
-
-1. **Parsing Tests**: Verify example lines parse correctly
-2. **Simple Cases**: Single button/counter scenarios
-3. **Example Validation**: All three provided examples (10, 12, 11)
-4. **Edge Cases**: Zero targets, infeasible systems
-5. **Performance**: Measure time on examples, optimize if needed
-
-### Pseudocode Flow
+**Recommended Structure:**
 
 ```
-solve_puzzle(input_file):
-    lines = read_input_file(input_file)
-    total_presses = 0
-    
-    for each line in lines:
-        buttons, targets = parse_line(line)
-        
-        min_presses = solve_machine(buttons, targets)
-        if min_presses is None:
-            report_error("Infeasible machine")
-            continue
-        
-        total_presses += min_presses
-    
-    return total_presses
+day-10/
+├── solution.py          # Part 1 (existing)
+├── solution_part2.py    # Part 2 (new)
+├── parser.py            # Shared parsing logic (extract if needed)
+├── test_solution.py     # Part 1 tests
+└── test_solution_part2.py  # Part 2 tests
+```
+
+### Data Flow
+
+```
+Input File → parse_input() → List[Machine]
+              ↓
+Machine → build_button_matrix() → (B, t)
+              ↓
+(B, t) → solve_integer_linear_system() → x (button presses)
+              ↓
+x → sum(x) → minimum presses for machine
+              ↓
+Aggregate → total minimum presses across all machines
 ```
 
 ---
 
-## Decision Summary
+## Risk Assessment
 
-| Aspect | Decision |
-|--------|----------|
-| **Primary Algorithm** | Greedy + Backtracking Hybrid |
-| **Fallback Algorithm** | Gaussian Elimination (if needed) |
-| **External Dependencies** | None required |
-| **Estimated Performance** | < 1s per machine, < 10s total |
-| **Code Complexity** | Moderate (backtracking is standard pattern) |
-| **Testing Approach** | TDD with red-green-refactor cycle |
+### High-Confidence Areas
+
+✅ Parsing: Reuses proven Part 1 parser  
+✅ Matrix construction: Direct translation from button definitions  
+✅ Small-scale testing: Three examples with known answers
+
+### Medium-Risk Areas
+
+⚠️ **Free variable enumeration bounds**: May need tuning for edge cases  
+⚠️ **Integer arithmetic precision**: Use `int64` or `Fraction` to avoid overflow  
+⚠️ **Performance for k > 10**: May require optimization or fallback solver
+
+### Mitigation Strategies
+
+1. **Implement LP relaxation bounds** before full enumeration
+2. **Add performance monitoring** to detect slow cases early
+3. **Prepare SciPy fallback** for machines with k > 10
+4. **Extensive testing** with synthetic high-k cases
 
 ---
 
-## Next Steps (Phase 1)
+## Summary
 
-1. **Data Model**: Define Machine, Button, Counter classes with validation
-2. **Parser Contract**: Specify exact parsing interface and error handling
-3. **Solver Contract**: Define solve_machine() and solve_all() interfaces
-4. **Test Plan**: Enumerate all test cases and expected outputs
-5. **Quickstart**: Document how to run example scenarios
+**Chosen Approach**: NumPy-based Gaussian elimination with bounded free variable enumeration
 
----
+**Key Decisions**:
 
-## References
+1. No additional dependencies (use NumPy only)
+2. Exact integer arithmetic via `fractions` module during elimination
+3. Smart enumeration bounds from LP relaxation
+4. Fallback to SciPy for edge cases (optional)
 
-- **Linear Diophantine Equations**: [Wikipedia](https://en.wikipedia.org/wiki/Diophantine_equation)
-- **Gaussian Elimination**: Standard numerical linear algebra technique
-- **Integer Linear Programming**: Field of optimization (advanced; not needed here)
-- **Backtracking**: Classic algorithmic pattern for constraint satisfaction problems
+**Expected Outcomes**:
+
+- Correct results on all three examples (10, 12, 11 → total 33)
+- Performance: <1s per machine for typical inputs
+- Maintainable code reusing Part 1 structure
+
+**Next Steps**: Proceed to Phase 1 (Data Model & Contracts)
