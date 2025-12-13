@@ -12,6 +12,7 @@
 | 8   | ✅     | ✅     | Circuit analysis (Union-Find)  |
 | 9   | ✅     | ✅     | Red-Green Rectangle (Ray Cast) |
 | 10  | ✅     | ✅     | Integer Linear Programming     |
+| 11  | ✅     | ⬜     | Reactor Path Finding (DFS)     |
 
 # Advent of Code 2025
 
